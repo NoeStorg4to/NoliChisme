@@ -1,0 +1,65 @@
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Panel de Administración</h1>
+        <p>Gestiona los roles de los usuarios</p>
+    </div>
+
+    @if (successMessage) {
+        <div class="alert alert-success">
+            {{ successMessage }}
+        </div>
+    }
+
+    @if (errorMessage) {
+        <div class="alert alert-danger">
+            {{ errorMessage }}
+        </div>
+    }
+
+    @if (isLoading) {
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Cargando usuarios...</p>
+        </div>
+    } @else {
+        <div class="usuarios-grid">
+            @for (usuario of users; track usuario._id) {
+                <div class="usuario-card">
+                    <div class="usuario-info">
+                        <div class="usuario-avatar">
+                            @if (usuario.imagenPerfil) {
+                                <img [src]="usuario.imagenPerfil" [alt]="usuario.nombreUsuario">
+                            } @else {
+                                <div class="avatar-placeholder">
+                                    {{ usuario.nombre.charAt(0).toUpperCase() }}
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="usuario-detalles">
+                            <h3>{{ usuario.nombre }} {{ usuario.apellido }}</h3>
+                            <p class="usuario-username">&#64;{{ usuario.nombreUsuario }}</p>
+                            <p class="usuario-email">{{ usuario.email }}</p>
+                            
+                            <span [class]="getRolBadgeClass(usuario.perfil)">
+                                {{ usuario.perfil === 'administrador' ? 'Admin' : 'Usuario' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <button 
+                        class="btn-cambiar-rol"
+                        [class.btn-promote]="usuario.perfil === 'usuario'"
+                        [class.btn-demote]="usuario.perfil === 'administrador'"
+                        (click)="changeRol(usuario)">
+                        @if (usuario.perfil === 'usuario') {
+                            Hacer Admin
+                        } @else {
+                            Quitar Admin
+                        }
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>

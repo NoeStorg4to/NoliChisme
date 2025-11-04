@@ -1,0 +1,143 @@
+<div class="registro-container">
+    <div class="mascota-welcome">
+        <img 
+            src="imagenes/mascota-bienvenida.png" 
+            alt="Mascota NoliChismes" 
+            class="mascota-img">
+    </div>
+    <h2>Unite a la comunidad del chisme</h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" formControlName="nombre" class="form-control" [class.is-invalid]="nombre?.invalid && nombre?.touched">
+
+                @if(nombre?.invalid && nombre?.touched){
+                    <div class="error-message">
+                        @if(nombre?.errors?.['required']) {
+                            El nombre es requerido
+                        }
+                        @if (nombre?.errors?.['minlength']) {
+                            Minimo 2 caracteres
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" formControlName="apellido" class="form-control" [class.is-invalid]="apellido?.invalid && apellido?.touched">
+            @if (apellido?.invalid && apellido?.touched) {
+                <div class="error-message">
+                    @if (apellido?.errors?.['required']) {
+                        El appelido es requerido
+                    }
+                    @if (apellido?.errors?.['minlength']) {
+                        Minimo 2 carecteres
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" formControlName="email" class="form-control" [class.is-invalid]="email?.invalid && email?.touched">
+            
+            @if (email?.invalid && email?.touched) {
+                <div class="error-message">
+                    @if (email?.errors?.['email']) {
+                        Formato de correo invalido
+                    }
+                    @if (email?.errors?.['required']) {
+                        El email es requerido
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="nombreUsuario">Nombre de usuario</label>
+            <input type="text" id="nombreUsuario" formControlName="nombreUsuario" class="form-control" [class.is-invalid]="nombreUsuario?.invalid && nombreUsuario?.touched">
+        
+            @if (nombreUsuario?.invalid && nombreUsuario?.touched) {
+                <div class="error-message">
+                    @if (nombreUsuario?.errors?.['required']) {
+                        El nombre de usuario es requerido
+                    }
+                    @if (nombreUsuario?.errors?.['minlength']) {
+                        Minimo 3 caracteres
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" formControlName="password" class="form-control" [class.is-invalid]="password?.invalid && password?.touched">
+
+                @if (password?.invalid && password?.touched) {
+                    <div class="error-message">
+                        @if (password?.errors?.['minlength']) {
+                            Minimo 8 caracteres
+                        }
+                        @if (password?.errors?.['pattern']) {
+                            Debe tener al menos una mayusucla y un numero
+                        }
+                        @if (password?.errors?.['required']) {
+                            La contraseña es requerida
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <input type="password" id="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched">
+
+            @if (confirmPassword?.invalid && confirmPassword?.touched) {
+                <div class="error-message">
+                    @if (confirmPassword?.errors?.['required']) {
+                        Confirma tu contraseña
+                    }
+                    @if (confirmPassword?.errors?.['passwordMismatch']) {
+                        Las contraseñas no coinciden
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="fechaNacimiento">Fecha de nacimiento</label>
+            <input type="date" id="fechaNacimiento" formControlName="fechaNacimiento" class="form-control" [class.is-invalid]="fechaNacimiento?.invalid && fechaNacimiento?.touched">
+
+            @if (fechaNacimiento?.invalid && fechaNacimiento?.touched) {
+                <div class="error-message">
+                    @if (fechaNacimiento?.errors?.['required']) {
+                        La fecha de nacimiento es requerida
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Una descripcion breve aca...</label>
+            <textarea id="descripcion" formControlName="descripcion" class="form-control" rows="3"></textarea>
+            @if (imagenPerfil) {
+                <small class="text-success">Imagen seleccionada: {{ imagenPerfil.name }}</small>
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="imagenPerfil">Imagen de perfil</label>
+            <input type="file" id="imagenPerfil" (change)="onFileSelected($event)" accept="image/*" class="form-control">
+        </div>
+
+        <button type="submit" [disabled]="registerForm.invalid" class="btn btn-primary btn-block">Registrarse</button>
+        
+        <p class="login-link">Ya tenes una cuenta? <a routerLink="/login">Inicia sesión aquí</a></p>
+    </form>
+</div>
