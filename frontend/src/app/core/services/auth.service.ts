@@ -38,9 +38,9 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap((response: any) => {
-        if(response.token && response.user) {
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user', JSON.stringify(response.user));
+        if(response.access_token && response.user) {
+          localStorage.setItem('token', response.access_token);
+          localStorage.setItem('usuario', JSON.stringify(response.user));
           this.currentUserSubject.next(response.user);
         }
       })
@@ -64,4 +64,5 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
+
 }

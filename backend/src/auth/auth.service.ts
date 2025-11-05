@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { LoginDto } from 'src/users/dto/login.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { LoginDto } from '../users/dto/login.dto';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -21,11 +21,12 @@ export class AuthService {
       sub: user._id,
       nombreUsuario: user.nombreUsuario,
       email: user.email,
+      perfil: user.perfil,
     };
     const token = this.jwtService.sign(playload);
     const { password, ...userSinPassword } = user.toObject();
     return {
-      user: userSinPassword,
+      usuario: userSinPassword,
       access_token: token,
     };
   }
@@ -43,9 +44,10 @@ export class AuthService {
     );
 
     if (!user) {
+      console.log('Usuario no encontrado');
       throw new UnauthorizedException('Credenciales invalidas');
     }
-
+    console.log('Usuario encontrado:', user.email);
     const passwordValid = await bcrypt.compare(
       loginDto.password,
       user.password,
@@ -59,12 +61,13 @@ export class AuthService {
       sub: user._id,
       nombreUsuario: user.nombreUsuario,
       email: user.email,
+      perfil: user.perfil,
     };
     const token = this.jwtService.sign(playload);
 
     const { password, ...userSinPassword } = user.toObject();
     return {
-      user: userSinPassword,
+      usuario: userSinPassword,
       access_token: token,
     };
   }

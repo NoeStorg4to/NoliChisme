@@ -1,6 +1,6 @@
 <nav class="navbar">
     <div class="navbar-container">
-        <a routerLink="isLoggedIn ? '/publicaciones' : '/login'" class="navbar-logo">
+        <a routerLink="/publicaciones" class="navbar-logo">
             <img 
                 src="imagenes/logo-navbar.png" 
                 alt="NoliChismes Mascota" 
@@ -15,25 +15,36 @@
         </button>
 
         <div class="navbar-menu" [class.active]="isMenuOpen">
+            <a 
+                routerLink="/publicaciones" 
+                routerLinkActive="active"
+                class="navbar-link"
+                (click)="isMenuOpen = false">Inicio</a>
+            <a 
+                routerLink="/perfil-view" 
+                routerLinkActive="active"
+                class="navbar-link"
+                (click)="isMenuOpen = false">Mi perfil</a>
+            <a 
+                routerLink="/login" 
+                routerLinkActive="active"
+                class="navbar-link"
+                (click)="isMenuOpen = false">Iniciar sesion</a>
+            <a 
+                routerLink="/register" 
+                routerLinkActive="active"
+                class="btn btn-register"
+                (click)="isMenuOpen = false">Registrarse</a>
+            
+        @if (isLoggedIn && currentUser?.perfil === 'administrador') {
+                <a 
+                    routerLink="/admin/dashboard" 
+                    routerLinkActive="active"
+                    [routerLinkActiveOptions]="{exact: false}"
+                    class="navbar-link navbar-admin"
+                    (click)="isMenuOpen = false">Panel Admin</a>
+            }
             @if (isLoggedIn) {
-                <a 
-                    routerLink="/publicaciones" 
-                    routerLinkActive="active"
-                    class="navbar-link"
-                    (click)="isMenuOpen = false">Inicio</a>
-                <a 
-                    routerLink="/perfil" 
-                    routerLinkActive="active"
-                    class="navbar-link"
-                    (click)="isMenuOpen = false">Mi perfil</a>
-                @if (currentUser?.perfil === 'administrador') {
-                    <a 
-                        routerLink="/admin/dashboard" 
-                        routerLinkActive="active"
-                        [routerLinkActiveOptions]="{exact: false}"
-                        class="navbar-link navbar-admin"
-                        (click)="isMenuOpen = false">Panel Admin</a>
-                }
                 @if (currentUser) {
                     <div class="navbar-user"> 
                         <span class="user-name">{{ currentUser.nombreUsuario }}</span>
@@ -43,17 +54,6 @@
                     </div>
                 }
                 <button class="btn btn-logout" (click)="logout()">Cerrar sesion</button>
-            } @else {
-                <a 
-                    routerLink="/login" 
-                    routerLinkActive="active"
-                    class="navbar-link"
-                    (click)="isMenuOpen = false">Iniciar sesion</a>
-                <a 
-                    routerLink="/register" 
-                    routerLinkActive="active"
-                    class="btn btn-register"
-                    (click)="isMenuOpen = false">Registrarse</a>
             }
         </div>
     </div>

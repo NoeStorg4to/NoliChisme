@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { AdminService } from '../../core/services/admin.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,7 @@ export class Login {
   isLoading: boolean = false;
   errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private adminService: AdminService) {
     this.loginForm = this.createForm();
   }
 
@@ -40,8 +41,12 @@ export class Login {
 
     this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          console.log('Login exitosaah', response);
-          this.router.navigate(['publicaciones'])
+          if(this.adminService.isAdmin()){
+            this.router.navigate(['/admin-dashboard'])
+          } else {
+            console.log('Login exitosaah', response);
+            this.router.navigate(['publicaciones'])
+          }
         },
         error: (error) => {
           this.isLoading = false;

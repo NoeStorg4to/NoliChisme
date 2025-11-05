@@ -35,4 +35,9 @@ export class AdminService {
             { headers: this.getHeaders() }
         )
     }
+
+    isAdmin(): boolean {
+    const user = this.authService.getCurrentUser();
+    return user?.perfil === 'administrador';
+}
 }

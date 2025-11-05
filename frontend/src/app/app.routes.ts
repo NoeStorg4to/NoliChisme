@@ -13,9 +13,8 @@ export const routes: Routes = [
     { path: 'publicaciones',
         loadComponent: () => import('./features/publicaciones/publicaciones-list').then(m => m.PublicacionesList)
     },
-    { path: 'mi-perfil',
-        loadComponent: () => import('./features/perfil/perfil-view').then(m => m.PerfilView),
-        canActivate: [authGuard]
+    { path: 'perfil-view',
+        loadComponent: () => import('./features/perfil/perfil-view').then(m => m.PerfilView)
     },
     { path: 'admin/dashboard',
         loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard),

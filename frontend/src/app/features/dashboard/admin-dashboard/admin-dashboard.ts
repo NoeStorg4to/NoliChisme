@@ -3,8 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../../core/interfaces/user.interface';
 import { AdminService } from '../../../core/services/admin.service';
-import { error } from 'console';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -19,9 +18,14 @@ export class AdminDashboard implements OnInit{
   errorMessage: string = '';
   successMessage: string = '';
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit(): void {
+    if(!this.adminService.isAdmin()) {
+      this.router.navigate(['/login']) //CAMBIARLO POR ALGUN HOME
+      return;
+    }
+    
     this.loadUsers();
   }
 
