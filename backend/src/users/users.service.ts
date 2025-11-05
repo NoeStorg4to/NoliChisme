@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Users } from './schemas/users.schema';
@@ -25,6 +29,13 @@ export class UsersService {
     });
     if (userExist) {
       throw new ConflictException('El nombre de usuario ya se uso');
+    }
+
+    const birthDate = new Date(createUserDto.fechaNacimiento);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    if (age < 13) {
+      throw new BadRequestException('Debes tener al menos 13 años');
     }
 
     const salt = await bcrypt.genSalt(10);
