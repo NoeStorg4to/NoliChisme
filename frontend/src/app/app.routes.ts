@@ -14,7 +14,8 @@ export const routes: Routes = [
         loadComponent: () => import('./features/publicaciones/publicaciones-list').then(m => m.PublicacionesList)
     },
     { path: 'perfil-view',
-        loadComponent: () => import('./features/perfil/perfil-view').then(m => m.PerfilView)
+        loadComponent: () => import('./features/perfil/perfil-view').then(m => m.PerfilView),
+        canActivate: [authGuard]
     },
     { path: 'admin/dashboard',
         loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard),

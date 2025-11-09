@@ -1,1 +1,62 @@
-<p>publicaciones-list works!</p>
+<div class="publicaciones-container">
+  
+  <div class="publicaciones-header">
+    <h1>Últimos Chismes</h1>
+    
+    <!-- Controles de Ordenamiento -->
+    <div class="sort-controls">
+      <span>Ordenar por:</span>
+      <button 
+        class="btn-sort" 
+        [class.active]="sortBy === 'fechaCreacion'"
+        (click)="onSortChange('fechaCreacion')">
+        Recientes
+      </button>
+      <button 
+        class="btn-sort"
+        [class.active]="sortBy === 'meGusta'"
+        (click)="onSortChange('meGusta')">
+        Más Populares
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading && publicaciones.length === 0) {
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Cargando chismecitos...</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <!-- Listado de Publicaciones -->
+  <div class="publicaciones-list">
+    @for (pub of publicaciones; track pub._id) {
+      <app-publicacion-card
+        [publicacion]="pub" 
+        [currentUser]="currentUser"
+        (onLikeToggle)="handleLikeToggle($event)"
+        (onDelete)="handleDelete($event)">
+      </app-publicacion-card>
+    }
+  </div>
+
+  <!-- Paginación -->
+  @if (!isLoading && publicaciones.length < totalPublicaciones) {
+    <button class="btn btn-primary btn-load-more" (click)="loadMore()">
+      Cargar más
+    </button>
+  }
+
+  @if (!isLoading && publicaciones.length === totalPublicaciones && publicaciones.length > 0) {
+    <p class="end-of-list">Fin de los chismes por ahora... ¡vuelve más tarde!</p>
+  }
+
+  @if (!isLoading && publicaciones.length === 0 && !errorMessage) {
+    <p class="end-of-list">No hay chismes para mostrar. ¡Sé el primero!</p>
+  }
+
+</div>

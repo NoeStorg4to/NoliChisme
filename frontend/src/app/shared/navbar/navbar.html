@@ -25,16 +25,18 @@
                 routerLinkActive="active"
                 class="navbar-link"
                 (click)="isMenuOpen = false">Mi perfil</a>
-            <a 
-                routerLink="/login" 
-                routerLinkActive="active"
-                class="navbar-link"
-                (click)="isMenuOpen = false">Iniciar sesion</a>
-            <a 
-                routerLink="/register" 
-                routerLinkActive="active"
-                class="btn btn-register"
-                (click)="isMenuOpen = false">Registrarse</a>
+            @if (!isLoggedIn) {
+                <a 
+                    routerLink="/login" 
+                    routerLinkActive="active"
+                    class="navbar-link"
+                    (click)="isMenuOpen = false">Iniciar sesion</a>
+                <a 
+                    routerLink="/register" 
+                    routerLinkActive="active"
+                    class="btn btn-register"
+                    (click)="isMenuOpen = false">Registrarse</a>
+            }
             
         @if (isLoggedIn && currentUser?.perfil === 'administrador') {
                 <a 

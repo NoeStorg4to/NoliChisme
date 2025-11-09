@@ -1,8 +1,10 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Users extends Document {
+  declare _id: Types.ObjectId;
+
   @Prop({ required: true })
   nombre: string;
 

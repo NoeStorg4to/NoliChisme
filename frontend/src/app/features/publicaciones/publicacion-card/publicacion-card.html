@@ -1,0 +1,49 @@
+<div class="publicacion-card">
+  <div class="card-header">
+    <div class="user-info">
+      <img 
+        [src]="fullAvatarUrl || 'imagenes/avatar-default.png'" 
+        alt="Avatar" 
+        class="avatar"
+        onError="this.src='imagenes/avatar-default.png'">
+      <div class="user-details">
+        <span class="username">{{ publicacion.usuarioId.nombreUsuario || 'Usuario' }}</span>
+        <span class="fecha">{{ publicacion.fechaCreacion | date:'medium' }}</span>
+      </div>
+    </div>
+    @if (isOwner) {
+      <button class="btn-delete" (click)="deletePost()">×</button>
+    }
+  </div>
+
+  <div class="card-body">
+    <h3>{{ publicacion.titulo }}</h3>
+    <p>{{ publicacion.descripcion }}</p>
+    @if (fullImageUrl) {
+      <img [src]="fullImageUrl" alt="Imagen de la publicación" class="post-image">
+    }
+  </div>
+
+  <div class="card-actions">
+    <button class="btn-action btn-like" [class.liked]="isLiked" (click)="toggleLike()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <span>{{ publicacion.likesCount }}</span>
+    </button>
+    <div class="btn-action btn-comment">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      <span>{{ publicacion.comentarios.length || 0 }}</span>
+    </div>
+  </div>
+
+  <div class="card-comments">
+    @if (publicacion.comentarios && publicacion.comentarios.length > 0) {
+      <div class="comment">
+        <span class="comment-user">{{ publicacion.comentarios[0].usuarioId.nombreUsuario || 'Alguien' }}:</span>
+        <span class="comment-content">{{ publicacion.comentarios[0].contenido }}</span>
+      </div>
+      @if (publicacion.comentarios.length > 1) {
+        <a class="view-all-comments">Ver los {{ publicacion.comentarios.length }} comentarios</a>
+      }
+    }
+  </div>
+</div>

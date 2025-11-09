@@ -1,4 +1,22 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
+import { PublicacionesController } from './publicacion.controller';
+import { PublicacionesService } from './publicacion.service';
+import { Comentario, ComentarioSchema } from './schemas/comentario.schema';
+import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema';
 
-@Module({})
+@Module({
+  imports: [
+    MongooseModule.forFeature([
+      { name: Publicacion.name, schema: PublicacionSchema },
+      { name: Comentario.name, schema: ComentarioSchema },
+    ]),
+    AuthModule,
+    UsersModule,
+  ],
+  controllers: [PublicacionesController],
+  providers: [PublicacionesService],
+})
 export class PublicacionesModule {}

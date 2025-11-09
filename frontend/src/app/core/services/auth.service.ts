@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   private getUserFromStorage(): User | null {
-    const userStr = localStorage.getItem('usuario');
+    const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   }
 
@@ -38,10 +38,10 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap((response: any) => {
-        if(response.access_token && response.user) {
+        if(response.access_token && response.usuario) {
           localStorage.setItem('token', response.access_token);
-          localStorage.setItem('usuario', JSON.stringify(response.user));
-          this.currentUserSubject.next(response.user);
+          localStorage.setItem('user', JSON.stringify(response.usuario));
+          this.currentUserSubject.next(response.usuario);
         }
       })
     );

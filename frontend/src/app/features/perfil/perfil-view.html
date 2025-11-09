@@ -1,1 +1,50 @@
-<p>perfil-view works!</p>
+<div class="perfil-container">
+  @if (user) {
+    <div class="perfil-header">
+      <img 
+        [src]="fullAvatarUrl || 'imagenes/avatar-default.png'" 
+        alt="Foto de perfil" 
+        class="perfil-avatar"
+        onError="this.src='imagenes/avatar-default.png'">
+      <div class="perfil-info">
+        <h1 class="perfil-nombre">{{ user.nombre }} {{ user.apellido }}</h1>
+        <h2 class="perfil-username">&#64;{{ user.nombreUsuario }}</h2>
+        <p class="perfil-email">{{ user.email }}</p>
+        <p class="perfil-fecha">Se unió el: {{ user.fechaNacimiento | date:'longDate' }}</p>
+        @if (user.descripcion) {
+          <p class="perfil-descripcion">{{ user.descripcion }}</p>
+        }
+      </div>
+      <button class="btn btn-edit">Editar Perfil</button>
+    </div>
+
+    <div class="perfil-publicaciones">
+      <h3>Últimos Chismes</h3>
+      
+      @if (isLoading) {
+        <p>Cargando publicaciones...</p>
+      }
+
+      @if (!isLoading && publicaciones.length > 0) {
+        <div class="publicaciones-list">
+          @for (pub of publicaciones; track pub._id) {
+            <app-publicacion-card 
+              [publicacion]="pub" 
+              [currentUser]="user"
+              (onLikeToggle)="handleLikeToggle($event)"
+              (onDelete)="handleDelete($event)">
+            </app-publicacion-card>
+          }
+        </div>
+      }
+
+      @if (!isLoading && publicaciones.length === 0) {
+        <p class="no-publicaciones">¡Aún no has publicado ningún chisme!</p>
+      }
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+</div>

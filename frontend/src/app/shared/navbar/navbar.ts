@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 export class Navbar implements OnInit, OnDestroy{
   currentUser: User | null = null;
   isMenuOpen = false;
+  isLoggedIn= false;
   private userSubscription?: Subscription;
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -22,7 +23,10 @@ export class Navbar implements OnInit, OnDestroy{
   ngOnInit(): void {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+
+      this.isLoggedIn = !!user;
       console.log('Usuario actual en navbar:', user);
+      console.log('Navbar - Estado isLoggedIn:', this.isLoggedIn);
     });
   }
 
@@ -40,7 +44,7 @@ export class Navbar implements OnInit, OnDestroy{
     this.router.navigate(['/login']);
   }
 
-  get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
-  }
+  // get isLoggedIn(): boolean {
+  //   return this.authService.isLoggedIn();
+  // }
 }
