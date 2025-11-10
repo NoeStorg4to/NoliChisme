@@ -1,10 +1,17 @@
 <div class="publicaciones-container">
-  
   <div class="publicaciones-header">
-    <h1>Últimos Chismes</h1>
+    <div class="mascota-welcome">
+      <h1>Últimos Chismes</h1>
+      <img 
+        src="imagenes/Noli-chismosa2.png" 
+        alt="Mascota NoliChismes" 
+        class="mascota-img">
+    </div>
     
-    <!-- Controles de Ordenamiento -->
     <div class="sort-controls">
+      <button class="btn btn-primary btn-crear" (click)="isModalOpen = true">
+        + Crear Chisme
+      </button>
       <span>Ordenar por:</span>
       <button 
         class="btn-sort" 
@@ -32,7 +39,6 @@
     <div class="alert alert-danger">{{ errorMessage }}</div>
   }
 
-  <!-- Listado de Publicaciones -->
   <div class="publicaciones-list">
     @for (pub of publicaciones; track pub._id) {
       <app-publicacion-card
@@ -44,7 +50,25 @@
     }
   </div>
 
-  <!-- Paginación -->
+  @if (isModalOpen) {
+    <app-create-publicacion-modal 
+      (close)="isModalOpen = false"
+      (publicacionCreada)="addNewPublicacion($event)">
+    </app-create-publicacion-modal>
+  }
+
+  <!-- <div class="publicaciones-container">
+    <div class="publicaciones-header">
+      <h1>Últimos Chismes</h1>
+      
+      
+      
+      <div class="sort-controls">
+        <span>Ordenar por:</span>
+        </div>
+    </div>
+  </div> -->
+
   @if (!isLoading && publicaciones.length < totalPublicaciones) {
     <button class="btn btn-primary btn-load-more" (click)="loadMore()">
       Cargar más

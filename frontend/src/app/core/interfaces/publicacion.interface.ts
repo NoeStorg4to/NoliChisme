@@ -3,7 +3,7 @@ import { User } from "./user.interface";
 export interface Publicacion {
     _id?: string;
     usuarioId: User;
-    titulo: string;
+    // titulo: string;
     descripcion: string;
     imagenUrl?: string;
     contenido: string;

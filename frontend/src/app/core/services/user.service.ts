@@ -8,15 +8,15 @@ import { enviroment } from '../../../enviroments/enviroment';
   providedIn: 'root',
 })
 export class Userservice {
-  private apiUrl = enviroment.apiUrl;
+  private apiUrl = `${enviroment.apiUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
   getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/user/${id}`);
+    return this.http.get<User>(`${this.apiUrl}/${id}`);
   }
 
-  updateUser(id: string, user: Partial<User>): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/user/${id}`, user);
+  updateUser(id: string, user: FormData | Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/${id}`, user);
   }
 }

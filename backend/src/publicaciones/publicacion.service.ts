@@ -26,7 +26,10 @@ export class PublicacionesService {
       usuarioId,
       imagenUrl,
     });
-    return nuevaPublicacion.save();
+    await nuevaPublicacion.save();
+
+    await nuevaPublicacion.populate('usuarioId', 'nombreUsuario imagenPerfil');
+    return nuevaPublicacion;
   }
 
   async findAll(
@@ -55,6 +58,7 @@ export class PublicacionesService {
       .skip(offset)
       .limit(limit)
       .populate('usuarioId', 'nombreUsuario imagenPerfil')
+      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
       .exec();
 
     const total = await this.publicacionModel.countDocuments(filter);
@@ -63,10 +67,13 @@ export class PublicacionesService {
   }
 
   async findOne(id: string): Promise<Publicacion> {
-    const publicacion = await this.publicacionModel.findOne({
-      _id: id,
-      isDeleted: false,
-    });
+    const publicacion = await this.publicacionModel
+      .findOne({
+        _id: id,
+        isDeleted: false,
+      })
+      .populate('usuarioId', 'nombreUsuario imagenPerfil')
+      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil');
     if (!publicacion) {
       throw new NotFoundException('Publicación no encontrada');
     }
@@ -89,6 +96,7 @@ export class PublicacionesService {
     return publicacion.save();
   }
 
+  // METODOS PARA LIKESSS
   async like(id: string, usuarioId: Types.ObjectId): Promise<Publicacion> {
     const publicacion = await this.publicacionModel.findByIdAndUpdate(
       id,
@@ -120,5 +128,28 @@ export class PublicacionesService {
     }
     publicacion.likesCount = publicacion.likes.length;
     return publicacion.save();
+  }
+
+  // METODOS PARA COMENTARIO
+  async addComentario(
+    publicacionId: string,
+    usuarioId: Types.ObjectId,
+    contenido: string,
+  ): Promise<Publicacion> {
+    const publicacion = await this.findOne(publicacionId);
+    const nuevoComentario = {
+      _id: new Types.ObjectId(),
+      usuarioId: usuarioId,
+      contenido: contenido,
+    };
+
+    publicacion.comentarios.push(nuevoComentario);
+    await publicacion.save();
+    await publicacion.populate([
+      { path: 'usuarioId', select: 'nombreUsuario imagenPerfil' },
+      { path: 'comentarios.usuarioId', select: 'nombreUsuario imagenPerfil' },
+    ]);
+
+    return publicacion;
   }
 }

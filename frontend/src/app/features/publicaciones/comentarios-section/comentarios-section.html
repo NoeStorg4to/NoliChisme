@@ -1,0 +1,40 @@
+<div class="comentarios-wrapper">
+  
+  <div class="comentarios-list">
+    @for (comentario of publicacion.comentarios; track comentario._id) {
+      <div class="comentario-item">
+        <img 
+          [src]="getAvatarUrl(comentario.usuarioId)"
+          alt="Avatar" 
+          class="avatar-comentario"
+          onError="this.src='imagenes/avatar-default.png'">
+        <div class="comentario-body">
+          <span class="comentario-user">{{ comentario.usuarioId.nombreUsuario || 'Usuario' }}</span>
+          <p class="comentario-content">{{ comentario.contenido }}</p>
+          <span class="comentario-fecha">{{ comentario.fechaCreacion | date:'short' }}</span>
+        </div>
+      </div>
+    }
+    @if (publicacion.comentarios.length === 0) {
+      <p class="no-comentarios">Sé el primero en comentar!</p>
+    }
+  </div>
+
+  <form class="comentario-form" [formGroup]="comentarioForm" (ngSubmit)="enviarComentario()">
+    @if (currentUser) {
+      <img 
+        [src]="getAvatarUrl(currentUser)"
+        alt="Tu Avatar" 
+        class="avatar-comentario"
+        onError="this.src='imagenes/avatar-default.png'">
+    }
+    <input 
+      type="text"
+      formControlName="contenido"
+      placeholder="Escribe un chisme..." 
+      class="form-control-comentario">
+    <button type="submit" [disabled]="comentarioForm.invalid || isLoading" class="btn-enviar">
+      Enviar
+    </button>
+  </form>
+</div>

@@ -14,9 +14,6 @@ export class Publicacion extends Document {
   usuarioId: Types.ObjectId;
 
   @Prop({ required: true, trim: true })
-  titulo: string;
-
-  @Prop({ required: true, trim: true })
   descripcion: string;
 
   @Prop()

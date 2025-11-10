@@ -6,11 +6,12 @@ import { Publicacion } from '../../core/interfaces/publicacion.interface';
 import { User } from '../../core/interfaces/user.interface';
 import { PublicacionCard } from './publicacion-card/publicacion-card';
 import { FormsModule } from '@angular/forms';
+import { CreatePublicacionModal } from "./create-publicacion/create-publicacion-modal/create-publicacion-modal";
 
 @Component({
   selector: 'app-publicaciones-list',
   standalone: true,
-  imports: [CommonModule, PublicacionCard, FormsModule],
+  imports: [CommonModule, PublicacionCard, FormsModule, CreatePublicacionModal],
   templateUrl: './publicaciones-list.html',
   styleUrl: './publicaciones-list.css',
 })
@@ -24,6 +25,8 @@ export class PublicacionesList implements OnInit {
   limit: number = 10;
   offset: number = 0;
   totalPublicaciones: number = 0;
+
+  isModalOpen = false;
 
   constructor(
     private publicacionesService: PublicacionesService,
@@ -74,22 +77,9 @@ export class PublicacionesList implements OnInit {
   }
 
   handleLikeToggle(publicacionId: string): void {
-    const publicacion = this.publicaciones.find(p => p._id === publicacionId);
-    if (!publicacion || !this.currentUser) return;
-
-    const isLiked = publicacion.likes.includes(this.currentUser._id!);
-
-    const request$ = isLiked
-      ? this.publicacionesService.unlikePublicacion(publicacionId)
-      : this.publicacionesService.likePublicacion(publicacionId);
-
-    request$.subscribe({
-      next: (updatedPublicacion) => {
-        const index = this.publicaciones.findIndex(p => p._id === publicacionId);
-        if (index !== -1) {
-          this.publicaciones[index] = updatedPublicacion;
-          this.publicaciones = [...this.publicaciones]; 
-        }
+    this.publicacionesService.handleLikeToggle(publicacionId, this.publicaciones).subscribe({
+      next: (updatedPublicaciones) => {
+        this.publicaciones = updatedPublicaciones;
       },
       error: (err) => {
         console.error('Error al actualizar el like', err);
@@ -99,15 +89,21 @@ export class PublicacionesList implements OnInit {
   }
 
   handleDelete(publicacionId: string): void {
-    this.publicacionesService.deletePublicacion(publicacionId).subscribe({
-      next: () => {
-        this.publicaciones = this.publicaciones.filter(p => p._id !== publicacionId);
+    this.publicacionesService.handleDelete(publicacionId, this.publicaciones).subscribe({
+      next: (updatedPublicaciones) => {
+        this.publicaciones = updatedPublicaciones;
         this.totalPublicaciones--;
       },
       error: (err) => {
-        this.errorMessage = 'Error al eliminar la publicación.';
+        this.errorMessage = 'error al eliminar la publicacion';
         console.error(err);
       }
-    });
+    })
+  }
+
+  addNewPublicacion(newPublicacion: Publicacion): void {
+    this.publicaciones = [newPublicacion, ...this.publicaciones];
+    this.totalPublicaciones++;
+    this.isModalOpen = false;
   }
 }

@@ -15,24 +15,21 @@ export class AdminService {
 
     constructor(private http: HttpClient, private authService: AuthService){}
 
-    private getHeaders(): HttpHeaders {
-        const token = this.authService.getToken();
-        return new HttpHeaders({
-            'Autorization': `Bearer ${token}`
-        });
-    }
+    // private getHeaders(): HttpHeaders { LO HACE EL INTERCEPTOR ESTO ASI QUE BYE
+    //     const token = this.authService.getToken();
+    //     return new HttpHeaders({
+    //         'Autorization': `Bearer ${token}`
+    //     });
+    // }
 
     getUsers(): Observable<User[]> {
-        return this.http.get<User[]>(`${this.apiUrl}/users`, {
-            headers: this.getHeaders()
-        });
+        return this.http.get<User[]>(`${this.apiUrl}/users`);
     }
 
     changesRolUser(userId: string, newRol: string): Observable<any> {
         return this.http.patch(
             `${this.apiUrl}/users/${userId}/rol`,
             { perfil: newRol },
-            { headers: this.getHeaders() }
         )
     }
 

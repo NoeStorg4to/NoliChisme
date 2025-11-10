@@ -65,4 +65,12 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  updateCurrentUser(updatedUser: Partial<User>): void {
+    const currentUser = this.getCurrentUser();
+    if (currentUser) {
+      const newUser = { ...currentUser, ...updatedUser };
+      localStorage.setItem('user', JSON.stringify(newUser));
+      this.currentUserSubject.next(newUser);
+    }
+  }
 }

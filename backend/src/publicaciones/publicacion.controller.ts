@@ -20,13 +20,25 @@ import { QueryPublicacionDto } from './dto/query-publicacion.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 import { Users } from '../users/schemas/users.schema';
+import { CreateComentarioDto } from './dto/create-coments.dto';
 
 @UseGuards(JwtAuthGuard) // Protege todas las rutas de este controlador
 @Controller('publicaciones')
 export class PublicacionesController {
   constructor(private readonly publicacionesService: PublicacionesService) {}
 
-  @Post()
+  @Post(':id/comentarios')
+  addComentario(
+    @Param('id') id: string,
+    @Body() createComentarioDto: CreateComentarioDto,
+    @GetUser() user: Users,
+  ) {
+    return this.publicacionesService.addComentario(
+      id,
+      user._id,
+      createComentarioDto.contenido,
+    );
+  }
   @UseInterceptors(
     FileInterceptor('imagen', {
       storage: diskStorage({

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { enviroment } from '../../../enviroments/enviroment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { Publicacion, PublicacionesResponse } from '../interfaces/publicacion.interface';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { Publicacion, PublicacionesResponse } from '../interfaces/publicacion.in
 export class PublicacionesService {
   private apiUrl = `${enviroment.apiUrl}/publicaciones`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   getPublicaciones(sortBy: string = 'fechaCreacion', limit: number = 10, offset: number = 0, usuarioId?: string): Observable<PublicacionesResponse>{
     let params = new HttpParams().set('sortBy', sortBy).set('limit', limit.toString()).set('offset', offset.toString());
@@ -36,5 +37,44 @@ export class PublicacionesService {
 
   unlikePublicacion(id: string): Observable<Publicacion> {
     return this.http.delete<Publicacion>(`${this.apiUrl}/${id}/like`);
+  }
+
+  addComentario(publicacionId: string, contenido: string): Observable<Publicacion> {
+    const body = { contenido: contenido };
+    return this.http.post<Publicacion>(`${this.apiUrl}/${publicacionId}/comentarios`, body);
+  }
+
+  handleLikeToggle(publicacionId: string, publicaciones: Publicacion[]): Observable<Publicacion[]> {
+    const currentUser = this.authService.getCurrentUser();
+    const publicacion = publicaciones.find(p => p._id === publicacionId);
+
+    if (!currentUser?._id || !publicacion){
+      return of(publicaciones);
+    }
+
+    const isLiked = publicacion.likes.includes(currentUser._id);
+    const request$ = isLiked
+      ? this.unlikePublicacion(publicacionId)
+      : this.likePublicacion(publicacionId);
+
+    return request$.pipe(
+      map(updatedPublicacion => {
+        const index = publicaciones.findIndex(p => p._id === publicacionId);
+        if(index !== -1) {
+          const newPublicaciones = [...publicaciones]; // pa los cambios
+          newPublicaciones[index] = updatedPublicacion;
+          return newPublicaciones;
+        }
+        return publicaciones;
+      })
+    )
+  }
+
+  handleDelete(publicacionId: string, publicaciones: Publicacion[]): Observable<Publicacion[]> {
+    return this.deletePublicacion(publicacionId).pipe(
+      map(() => {
+        return publicaciones.filter(p => p._id !== publicacionId);
+      })
+    )
   }
 }

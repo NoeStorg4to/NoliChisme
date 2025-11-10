@@ -15,7 +15,8 @@
           <p class="perfil-descripcion">{{ user.descripcion }}</p>
         }
       </div>
-      <button class="btn btn-edit">Editar Perfil</button>
+      <button class="btn btn-edit" (click)="isEditModalOpen = true">Editar Perfil</button>
+      <button class="btn btn-primary" (click)="isModalOpen = true">+ Crear Chisme</button>
     </div>
 
     <div class="perfil-publicaciones">
@@ -39,10 +40,25 @@
       }
 
       @if (!isLoading && publicaciones.length === 0) {
-        <p class="no-publicaciones">¡Aún no has publicado ningún chisme!</p>
+        <p class="no-publicaciones">Aún no publicaste ningún chisme</p>
       }
     </div>
   }
+
+  @if (isModalOpen) {
+    <app-create-publicacion-modal 
+      (close)="isModalOpen = false"
+      (publicacionCreada)="addNewPublicacion($event)">
+    </app-create-publicacion-modal>
+  }
+
+  @if (isEditModalOpen && user) {
+  <app-edit-perfil-modal
+    [user]="user"
+    (close)="isEditModalOpen = false"
+    (userUpdated)="onUserUpdated($event)">
+  </app-edit-perfil-modal>
+}
 
   @if (errorMessage) {
     <div class="alert alert-danger">{{ errorMessage }}</div>

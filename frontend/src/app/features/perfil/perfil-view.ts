@@ -6,11 +6,14 @@ import { User } from '../../core/interfaces/user.interface';
 import { Publicacion } from '../../core/interfaces/publicacion.interface';
 import { PublicacionCard } from '../publicaciones/publicacion-card/publicacion-card';
 import { enviroment } from '../../../enviroments/enviroment';
+import { CreatePublicacionModal } from '../publicaciones/create-publicacion/create-publicacion-modal/create-publicacion-modal';
+import { EditPerfilModal } from './edit-perfil/edit-perfil-modal';
+import { Userservice } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-perfil-view',
   standalone: true,
-  imports: [CommonModule, DatePipe, PublicacionCard],
+  imports: [CommonModule, DatePipe, PublicacionCard, CreatePublicacionModal, EditPerfilModal],
   templateUrl: './perfil-view.html',
   styleUrl: './perfil-view.css',
 })
@@ -21,19 +24,37 @@ export class PerfilView implements OnInit {
   errorMessage: string = '';
   fullAvatarUrl: string | null = null;
 
+  isModalOpen = false;
+  isEditModalOpen = false;
+
   constructor(
     private authService: AuthService,
     private publicacionesService: PublicacionesService,
+    private userService: Userservice,
   ) {}
 
   ngOnInit(): void {
-    this.user = this.authService.getCurrentUser();
-    if (this.user) {
-      this.buildAvatarUrl();
-      this.loadUserPosts();
-    } else {
-      this.errorMessage = 'No se pudo cargar la información del usuario.';
-      this.isLoading = false;
+    this.authService.currentUser$.subscribe(user => {
+      this.user = user;
+      if (this.user) {
+        this.buildAvatarUrl();
+        if (this.publicaciones.length === 0) {
+          this.loadUserPosts();
+        }
+      } else if (!this.isLoading){
+        this.errorMessage = 'No se pudo cargar la información del usuario.';
+        // this.isLoading = false;
+      }
+    })
+
+    const initialUser = this.authService.getCurrentUser();
+      if (initialUser) {
+        this.user = initialUser;
+        this.buildAvatarUrl();
+        this.loadUserPosts();
+      } else {
+        this.errorMessage = 'No se pudo cargar la información del usuario.';
+        this.isLoading = false;
     }
   }
 
@@ -65,29 +86,33 @@ export class PerfilView implements OnInit {
   }
 
   handleLikeToggle(publicacionId: string): void {
-    const publicacion = this.publicaciones.find(p => p._id === publicacionId);
-    if (!publicacion || !this.user) return;
-
-    const isLiked = publicacion.likes.includes(this.user._id!);
-    const request$ = isLiked
-      ? this.publicacionesService.unlikePublicacion(publicacionId)
-      : this.publicacionesService.likePublicacion(publicacionId);
-
-    request$.subscribe({
-      next: (updatedPublicacion) => {
-        const index = this.publicaciones.findIndex(p => p._id === publicacionId);
-        if (index !== -1) this.publicaciones[index] = updatedPublicacion;
-      },
-      error: (err) => console.error('Error al actualizar el like', err)
-    });
+    this.publicacionesService.handleLikeToggle(publicacionId, this.publicaciones)
+      .subscribe({
+        next: (updatedPublicaciones) => {
+          this.publicaciones = updatedPublicaciones;
+        },
+        error: (err) => console.error('Error al actualizar el like', err)
+      });
   }
 
   handleDelete(publicacionId: string): void {
-    this.publicacionesService.deletePublicacion(publicacionId).subscribe({
-      next: () => {
-        this.publicaciones = this.publicaciones.filter(p => p._id !== publicacionId);
-      },
-      error: (err) => console.error('Error al eliminar la publicación.', err)
-    });
+    this.publicacionesService.handleDelete(publicacionId, this.publicaciones)
+      .subscribe({
+        next: (updatedPublicaciones) => {
+          this.publicaciones = updatedPublicaciones;
+        },
+        error: (err) => console.error('Error al eliminar la publicación.', err)
+      });
+  }
+
+  addNewPublicacion(newPublicacion: Publicacion): void {
+    this.publicaciones = [newPublicacion, ...this.publicaciones];
+    this.isModalOpen = false;
+  }
+
+  // MANEJAMOS LA ACTUALIZACION DEL USUARIO ACA
+  onUserUpdated(updatedUser: User): void {
+    this.authService.updateCurrentUser(updatedUser);
+    this.isEditModalOpen = false;
   }
 }

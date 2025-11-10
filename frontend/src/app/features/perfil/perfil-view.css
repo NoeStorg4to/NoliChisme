@@ -93,6 +93,37 @@
   border-radius: 1rem;
 }
 
+.perfil-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-self: flex-start;
+}
+
+.perfil-actions .btn {
+  width: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 768px) {
+  .perfil-actions {
+    grid-row: 3;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .perfil-container {
     padding: 1rem;

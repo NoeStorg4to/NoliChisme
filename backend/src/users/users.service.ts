@@ -8,6 +8,9 @@ import * as bcrypt from 'bcrypt';
 import { Users } from './schemas/users.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PartialType } from '@nestjs/mapped-types';
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 @Injectable()
 export class UsersService {
@@ -54,13 +57,13 @@ export class UsersService {
     return this.usuarioModel.findOne(query).exec();
   }
 
-  async searchByEmailUser(userEmail: string): Promise<Users | null> {
-    return this.usuarioModel
-      .findOne({
-        $or: [{ email: userEmail }, { nombreUsuario: userEmail }],
-      })
-      .exec();
-  }
+  // async searchByEmailUser(userEmail: string): Promise<Users | null> {
+  //   return this.usuarioModel
+  //     .findOne({
+  //       $or: [{ email: userEmail }, { nombreUsuario: userEmail }],
+  //     })
+  //     .exec();
+  // }
 
   async searchById(id: string): Promise<Users | null> {
     return this.usuarioModel
@@ -75,5 +78,50 @@ export class UsersService {
         $or: [{ email: identifier }, { nombreUsuario: identifier }],
       })
       .exec();
+  }
+
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    imagenPerfil?: string,
+  ): Promise<Users | null> {
+    const updateData: Partial<Users> = {};
+
+    if (updateUserDto.nombreUsuario) {
+      const userExist = await this.usuarioModel.findOne({
+        nombreUsuario: updateUserDto.nombreUsuario,
+        _id: { $ne: id },
+      });
+      if (userExist) {
+        throw new ConflictException('El nombre de usuario ya se uso');
+      }
+      updateData.nombreUsuario = updateUserDto.nombreUsuario;
+    }
+
+    if (updateUserDto.descripcion !== undefined) {
+      updateData.descripcion = updateUserDto.descripcion;
+    }
+    if (imagenPerfil) {
+      updateData.imagenPerfil = imagenPerfil;
+    }
+    if (updateUserDto.nombreUsuario) {
+      const userExist = await this.usuarioModel.findOne({
+        nombreUsuario: updateUserDto.nombreUsuario,
+        _id: { $ne: id },
+      });
+      if (userExist) {
+        throw new ConflictException('El nombre de usuario ya esta en uso');
+      }
+    }
+
+    delete updateData.email;
+    delete updateData.password;
+
+    const updatedUser = await this.usuarioModel
+      .findByIdAndUpdate(id, { $set: updateData }, { new: true })
+      .select('-password')
+      .exec();
+
+    return updatedUser;
   }
 }

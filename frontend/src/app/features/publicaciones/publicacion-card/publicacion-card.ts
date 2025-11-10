@@ -3,11 +3,12 @@ import { enviroment } from '../../../../enviroments/enviroment';
 import { Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
 import { CommonModule, DatePipe } from '@angular/common';
+import { ComentariosSection } from '../comentarios-section/comentarios-section';
 
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, ComentariosSection],
   templateUrl: './publicacion-card.html',
   styleUrl: './publicacion-card.css',
 })
@@ -22,6 +23,8 @@ export class PublicacionCard implements OnInit {
   isOwner: boolean = false;
   fullImageUrl: string | null = null;
   fullAvatarUrl: string | null = null;
+
+  isComentariosOpen = false;
 
   ngOnInit(): void {
     this.checkLikeStatus();
@@ -62,5 +65,13 @@ export class PublicacionCard implements OnInit {
 
   deletePost(): void {
     this.onDelete.emit(this.publicacion._id);
+  }
+
+  toggleComentarios(): void {
+    this.isComentariosOpen = !this.isComentariosOpen;
+  }
+
+  actualizarPublicacion(publicacionActualizada: Publicacion): void {
+    this.publicacion = publicacionActualizada;
   }
 }
