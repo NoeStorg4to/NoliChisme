@@ -16,6 +16,8 @@ export class Register {
   registerForm!: FormGroup;
   imagenPerfil: File | null = null;
 
+  previewUrl: string | null = null;
+
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.createForm();
   }
@@ -44,7 +46,19 @@ export class Register {
   }
 
   onFileSelected(event: any): void {
-    this.imagenPerfil = event.target.files[0];
+    // this.imagenPerfil = event.target.files[0];
+    const file = event.target.files[0];
+    if (file) {
+      this.imagenPerfil = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.imagenPerfil = null;
+      this.previewUrl = null;
+    }
   }
 
   onSubmit(): void {

@@ -1,14 +1,14 @@
-<div class="publicacion-card">
+<div class="publicacion-card" appResaltar>
   <div class="card-header">
     <div class="user-info">
       <img 
-        [src]="fullAvatarUrl || 'imagenes/avatar-default.png'" 
+        [src]="fullAvatarUrl" 
         alt="Avatar" 
         class="avatar"
-        onError="this.src='imagenes/avatar-default.png'">
+        appImagenDefault>
       <div class="user-details">
         <span class="username">{{ publicacion.usuarioId.nombreUsuario || 'Usuario' }}</span>
-        <span class="fecha">{{ publicacion.fechaCreacion | date:'medium' }}</span>
+        <span class="fecha">{{ publicacion.fechaCreacion | tiempoTranscurrido }}</span>
       </div>
     </div>
     @if (isOwner) {
@@ -16,7 +16,7 @@
     }
   </div>
 
-  <div class="card-body">7
+  <div class="card-body" appResaltar="pink">
     <p>{{ publicacion.descripcion }}</p>
     @if (fullImageUrl) {
       <img [src]="fullImageUrl" alt="Imagen de la publicación" class="post-image">
@@ -44,22 +44,10 @@
   <div class="card-comments">
     @if (publicacion.comentarios && publicacion.comentarios.length > 0) {
       <div class="comment">
-        <!-- <span class="comment-user">{{ publicacion.comentarios[0].usuarioId.nombreUsuario || 'Alguien' }}:</span> -->
-        <!-- <span class="comment-content">{{ publicacion.comentarios[0].contenido }}</span> -->
       </div>
       @if (publicacion.comentarios.length > 1) {
         <a class="view-all-comments">Ver los {{ publicacion.comentarios.length }} comentarios</a>
       }
     }
   </div>
-
-  <!-- @if (showConfirmDeleteModal) {
-    <app-confirm-modal
-      message="Seguro que queres eliminar este chisme? No se puede deshacer."
-      confirmButtonText="Sí, eliminar"
-      [danger]="true"
-      (onConfirm)="onConfirmDelete()"
-      (onClose)="showConfirmDeleteModal = false">
-    </app-confirm-modal>
-  } -->
 </div>

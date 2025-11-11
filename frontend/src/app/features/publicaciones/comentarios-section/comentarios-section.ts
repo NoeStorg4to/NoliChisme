@@ -5,15 +5,16 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { enviroment } from '../../../../enviroments/enviroment';
 import { PublicacionesService } from '../../../core/services/publicaciones.service';
 import { CommonModule } from '@angular/common';
+import { EnfocarDirective } from '../../../core/directives/enfocar.directive';
 
 @Component({
   selector: 'app-comentarios-section',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EnfocarDirective],
   templateUrl: './comentarios-section.html',
   styleUrl: './comentarios-section.css',
 })
-export class ComentariosSection implements OnInit{
+export class ComentariosSection implements OnInit {
   @Input() publicacion!: Publicacion;
   @Input() currentUser!: User | null;
   @Output() comentarioAgregado = new EventEmitter<Publicacion>();
@@ -22,12 +23,9 @@ export class ComentariosSection implements OnInit{
   isLoading = false;
   apiBaseUrl = enviroment.apiUrl;
 
-  constructor(
-    private fb: FormBuilder,
-    private publicacionesService: PublicacionesService
-  ) {
+  constructor(private fb: FormBuilder, private publicacionesService: PublicacionesService) {
     this.comentarioForm = this.fb.group({
-      contenido: ['', [Validators.required, Validators.minLength(1)]]
+      contenido: ['', [Validators.required, Validators.minLength(1)]],
     });
   }
 
@@ -37,8 +35,8 @@ export class ComentariosSection implements OnInit{
 
   sortComentarios(): void {
     if (this.publicacion?.comentarios) {
-      this.publicacion.comentarios.sort((a, b) => 
-        new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+      this.publicacion.comentarios.sort(
+        (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
       );
     }
   }
@@ -60,7 +58,7 @@ export class ComentariosSection implements OnInit{
       error: (err) => {
         this.isLoading = false;
         console.error('Error al enviar comentario', err);
-      }
+      },
     });
   }
 

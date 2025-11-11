@@ -37,8 +37,6 @@ export class Login {
     this.isLoading = true;
     this.errorMessage = '';
 
-    console.log('Datos que se envían:', this.loginForm.value);
-
     this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           if(this.adminService.isAdmin()){
@@ -50,9 +48,6 @@ export class Login {
         },
         error: (error) => {
           this.isLoading = false;
-          console.error('Error en login amooor', error);
-          console.error('Error del back:', error.error);
-          console.error('Mensajes de todos los errores:', error.error?.message);
 
           if(error.status === 401) {
             this.errorMessage = 'Usuario o contraseña incorrectos';

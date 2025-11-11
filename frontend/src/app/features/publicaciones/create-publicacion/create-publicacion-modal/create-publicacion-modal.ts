@@ -3,6 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Publicacion } from '../../../../core/interfaces/publicacion.interface';
 import { PublicacionesService } from '../../../../core/services/publicaciones.service';
+import { TruncarPipe } from '../../../../core/pipes/truncar.pipe';
 
 @Component({
   selector: 'app-create-publicacion-modal',

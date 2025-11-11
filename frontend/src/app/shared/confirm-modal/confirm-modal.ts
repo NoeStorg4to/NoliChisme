@@ -4,8 +4,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-confirm-modal',
   imports: [CommonModule],
-  templateUrl: './confirm-modal.css',
-  styleUrl: '../../features/publicaciones/create-publicacion/create-publicacion-modal/create-publicacion-modal.css',
+  templateUrl: './confirm-modal.html',
+  styleUrl: './confirm-modal.css',
 })
 export class ConfirmModal {
   @Input() message: string = '¿Estás seguro?';

@@ -4,13 +4,15 @@ import { Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ComentariosSection } from '../comentarios-section/comentarios-section';
+import { TiempoTranscurrido } from '../../../core/pipes/tiempo-transcurrido.pipe';
+import { ResaltarDirective } from '../../../core/directives/resaltar.directive';
+import { TruncarPipe } from '../../../core/pipes/truncar.pipe';
 // import { ConfirmModal } from '../../../shared/confirm-modal/confirm-modal';
-
 
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
-  imports: [CommonModule, DatePipe, ComentariosSection],
+  imports: [CommonModule, ComentariosSection, TiempoTranscurrido, ResaltarDirective],
   templateUrl: './publicacion-card.html',
   styleUrl: './publicacion-card.css',
 })

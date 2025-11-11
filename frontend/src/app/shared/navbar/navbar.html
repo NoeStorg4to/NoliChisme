@@ -51,7 +51,7 @@
                     <div class="navbar-user"> 
                         <span class="user-name">{{ currentUser.nombreUsuario }}</span>
                             @if (currentUser.perfil === 'administrador') {
-                                <span class="badge-admin">Admin</span>
+                                <span class="badge-admin">{{ currentUser | iniciales }}</span>
                             }
                     </div>
                 }

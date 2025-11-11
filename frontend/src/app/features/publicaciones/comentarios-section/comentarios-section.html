@@ -30,7 +30,7 @@
     }
     <input 
       type="text"
-      formControlName="contenido"
+      formControlName="contenido" appEnfocar
       placeholder="Escribe un chisme..." 
       class="form-control-comentario">
     <button type="submit" [disabled]="comentarioForm.invalid || isLoading" class="btn-enviar">

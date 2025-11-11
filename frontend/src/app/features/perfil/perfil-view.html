@@ -12,7 +12,7 @@
         <p class="perfil-email">{{ user.email }}</p>
         <p class="perfil-fecha">Se unió el: {{ user.fechaNacimiento | date:'longDate' }}</p>
         @if (user.descripcion) {
-          <p class="perfil-descripcion">{{ user.descripcion }}</p>
+          <p class="perfil-descripcion">{{ user.descripcion | truncar:20}}</p>
         }
       </div>
       <button class="btn btn-edit" (click)="isEditModalOpen = true">Editar Perfil</button>
@@ -39,8 +39,22 @@
         </div>
       }
 
+      @if (!isLoading && publicaciones.length < totalPublicaciones) {
+        <button class="btn btn-primary btn-block" (click)="loadMore()" [disabled]="isLoadingMore">
+          @if (isLoadingMore) {
+            Cargando...
+          } @else {
+            Cargar más
+          }
+        </button>
+      }
+
+      @if (!isLoading && publicaciones.length === totalPublicaciones && publicaciones.length > 0) {
+        <p class="end-of-list">No hay mas chismes por ahora.</p>
+      }
+
       @if (!isLoading && publicaciones.length === 0) {
-        <p class="no-publicaciones">Aún no publicaste ningún chisme</p>
+        <p class="no-publicaciones">Aun no publicaste ningún chisme</p>
       }
     </div>
   }
