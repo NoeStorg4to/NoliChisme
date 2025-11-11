@@ -4,6 +4,8 @@ import { Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ComentariosSection } from '../comentarios-section/comentarios-section';
+// import { ConfirmModal } from '../../../shared/confirm-modal/confirm-modal';
+
 
 @Component({
   selector: 'app-publicacion-card',
@@ -17,7 +19,7 @@ export class PublicacionCard implements OnInit {
   @Input() currentUser!: User | null;
 
   @Output() onLikeToggle = new EventEmitter<string>();
-  @Output() onDelete = new EventEmitter<string>();
+  @Output() deleteRequest = new EventEmitter<Publicacion>();
 
   isLiked: boolean = false;
   isOwner: boolean = false;
@@ -25,6 +27,8 @@ export class PublicacionCard implements OnInit {
   fullAvatarUrl: string | null = null;
 
   isComentariosOpen = false;
+
+  // showConfirmDeleteModal = false;
 
   ngOnInit(): void {
     this.checkLikeStatus();
@@ -63,8 +67,8 @@ export class PublicacionCard implements OnInit {
       : (this.publicacion.likesCount = Math.max(0, this.publicacion.likesCount - 1));
   }
 
-  deletePost(): void {
-    this.onDelete.emit(this.publicacion._id);
+  onDeleteClick(): void {
+    this.deleteRequest.emit(this.publicacion);
   }
 
   toggleComentarios(): void {

@@ -45,7 +45,7 @@
         [publicacion]="pub" 
         [currentUser]="currentUser"
         (onLikeToggle)="handleLikeToggle($event)"
-        (onDelete)="handleDelete($event)">
+        (deleteRequest)="onDeleteRequest($event)">
       </app-publicacion-card>
     }
   </div>
@@ -68,6 +68,16 @@
         </div>
     </div>
   </div> -->
+
+  @if (publicacionAEliminar) {
+    <app-confirm-modal
+      [message]="'Seguro que quieres eliminar este chisme? No se puede deshacer.'"
+      confirmButtonText="Sí, eliminar"
+      [danger]="true"
+      (onConfirm)="onConfirmDelete()"
+      (onClose)="onCancelDelete()">
+    </app-confirm-modal>
+  }
 
   @if (!isLoading && publicaciones.length < totalPublicaciones) {
     <button class="btn btn-primary btn-load-more" (click)="loadMore()">

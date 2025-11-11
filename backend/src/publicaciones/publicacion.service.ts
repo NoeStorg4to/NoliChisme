@@ -83,7 +83,7 @@ export class PublicacionesService {
   async softDelete(id: string, usuario: Users): Promise<Publicacion> {
     const publicacion = await this.findOne(id);
     const esPropietario =
-      publicacion.usuarioId.toString() === usuario._id.toString();
+      publicacion.usuarioId._id.toString() === usuario._id.toString();
     const esAdmin = usuario.perfil === 'administrador';
 
     if (!esPropietario && !esAdmin) {

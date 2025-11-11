@@ -39,6 +39,7 @@ export class PublicacionesController {
       createComentarioDto.contenido,
     );
   }
+  @Post()
   @UseInterceptors(
     FileInterceptor('imagen', {
       storage: diskStorage({

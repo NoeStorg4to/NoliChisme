@@ -12,11 +12,11 @@
       </div>
     </div>
     @if (isOwner) {
-      <button class="btn-delete" (click)="deletePost()">×</button>
+      <button class="btn-delete" (click)="onDeleteClick()" title="Eliminar">×</button>
     }
   </div>
 
-  <div class="card-body">
+  <div class="card-body">7
     <p>{{ publicacion.descripcion }}</p>
     @if (fullImageUrl) {
       <img [src]="fullImageUrl" alt="Imagen de la publicación" class="post-image">
@@ -44,12 +44,22 @@
   <div class="card-comments">
     @if (publicacion.comentarios && publicacion.comentarios.length > 0) {
       <div class="comment">
-        <span class="comment-user">{{ publicacion.comentarios[0].usuarioId.nombreUsuario || 'Alguien' }}:</span>
-        <span class="comment-content">{{ publicacion.comentarios[0].contenido }}</span>
+        <!-- <span class="comment-user">{{ publicacion.comentarios[0].usuarioId.nombreUsuario || 'Alguien' }}:</span> -->
+        <!-- <span class="comment-content">{{ publicacion.comentarios[0].contenido }}</span> -->
       </div>
       @if (publicacion.comentarios.length > 1) {
         <a class="view-all-comments">Ver los {{ publicacion.comentarios.length }} comentarios</a>
       }
     }
   </div>
+
+  <!-- @if (showConfirmDeleteModal) {
+    <app-confirm-modal
+      message="Seguro que queres eliminar este chisme? No se puede deshacer."
+      confirmButtonText="Sí, eliminar"
+      [danger]="true"
+      (onConfirm)="onConfirmDelete()"
+      (onClose)="showConfirmDeleteModal = false">
+    </app-confirm-modal>
+  } -->
 </div>

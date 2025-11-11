@@ -98,6 +98,18 @@ body {
     color: var(--white);
 }
 
+.btn-danger {
+    background: var(--error);
+    color: var(--white);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #d63a3a;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
 .form-control {
     width: 100%;
     padding: 0.875rem;

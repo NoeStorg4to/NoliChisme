@@ -6,12 +6,13 @@ import { Publicacion } from '../../core/interfaces/publicacion.interface';
 import { User } from '../../core/interfaces/user.interface';
 import { PublicacionCard } from './publicacion-card/publicacion-card';
 import { FormsModule } from '@angular/forms';
-import { CreatePublicacionModal } from "./create-publicacion/create-publicacion-modal/create-publicacion-modal";
+import { CreatePublicacionModal } from './create-publicacion/create-publicacion-modal/create-publicacion-modal';
+import { ConfirmModal } from '../../shared/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-publicaciones-list',
   standalone: true,
-  imports: [CommonModule, PublicacionCard, FormsModule, CreatePublicacionModal],
+  imports: [CommonModule, PublicacionCard, FormsModule, CreatePublicacionModal, ConfirmModal],
   templateUrl: './publicaciones-list.html',
   styleUrl: './publicaciones-list.css',
 })
@@ -28,9 +29,11 @@ export class PublicacionesList implements OnInit {
 
   isModalOpen = false;
 
+  publicacionAEliminar: Publicacion | null = null;
+
   constructor(
     private publicacionesService: PublicacionesService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -45,23 +48,19 @@ export class PublicacionesList implements OnInit {
       this.publicaciones = [];
     }
 
-    this.publicacionesService
-      .getPublicaciones(this.sortBy, this.limit, this.offset)
-      .subscribe({
-        next: (response) => {
-          this.publicaciones = loadMore 
-            ? [...this.publicaciones, ...response.data] 
-            : response.data;
-          this.totalPublicaciones = response.total;
-          this.offset = this.publicaciones.length;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          this.errorMessage = 'Error al cargar las publicaciones.';
-          console.error(err);
-          this.isLoading = false;
-        },
-      });
+    this.publicacionesService.getPublicaciones(this.sortBy, this.limit, this.offset).subscribe({
+      next: (response) => {
+        this.publicaciones = loadMore ? [...this.publicaciones, ...response.data] : response.data;
+        this.totalPublicaciones = response.total;
+        this.offset = this.publicaciones.length;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Error al cargar las publicaciones.';
+        console.error(err);
+        this.isLoading = false;
+      },
+    });
   }
 
   onSortChange(newSort: string): void {
@@ -84,21 +83,35 @@ export class PublicacionesList implements OnInit {
       error: (err) => {
         console.error('Error al actualizar el like', err);
         this.loadPublicaciones(false);
-      }
+      },
     });
   }
 
-  handleDelete(publicacionId: string): void {
-    this.publicacionesService.handleDelete(publicacionId, this.publicaciones).subscribe({
-      next: (updatedPublicaciones) => {
-        this.publicaciones = updatedPublicaciones;
-        this.totalPublicaciones--;
-      },
-      error: (err) => {
-        this.errorMessage = 'error al eliminar la publicacion';
-        console.error(err);
-      }
-    })
+  onConfirmDelete(): void {
+    if (!this.publicacionAEliminar) return;
+
+    this.publicacionesService
+      .handleDelete(this.publicacionAEliminar._id!, this.publicaciones)
+      .subscribe({
+        next: (updatedPublicaciones) => {
+          this.publicaciones = updatedPublicaciones;
+          this.totalPublicaciones--;
+          this.publicacionAEliminar = null;
+        },
+        error: (err) => {
+          this.errorMessage = 'error al eliminar la publicacion';
+          console.error(err);
+          this.publicacionAEliminar = null;
+        },
+      });
+  }
+
+  onDeleteRequest(publicacion: Publicacion): void {
+    this.publicacionAEliminar = publicacion;
+  }
+
+  onCancelDelete(): void {
+    this.publicacionAEliminar = null;
   }
 
   addNewPublicacion(newPublicacion: Publicacion): void {

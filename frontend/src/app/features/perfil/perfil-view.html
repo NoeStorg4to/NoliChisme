@@ -33,7 +33,7 @@
               [publicacion]="pub" 
               [currentUser]="user"
               (onLikeToggle)="handleLikeToggle($event)"
-              (onDelete)="handleDelete($event)">
+              (deleteRequest)="onDeleteRequest($event)">
             </app-publicacion-card>
           }
         </div>
@@ -62,5 +62,15 @@
 
   @if (errorMessage) {
     <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (publicacionAEliminar) {
+    <app-confirm-modal
+      [message]="'Seguro que queres eliminar este chisme? No se puede deshacer.'"
+      confirmButtonText="Sí, eliminar"
+      [danger]="true"
+      (onConfirm)="onConfirmDelete()"
+      (onClose)="onCancelDelete()">
+    </app-confirm-modal>
   }
 </div>

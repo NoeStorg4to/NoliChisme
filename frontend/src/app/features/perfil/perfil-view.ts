@@ -9,11 +9,12 @@ import { enviroment } from '../../../enviroments/enviroment';
 import { CreatePublicacionModal } from '../publicaciones/create-publicacion/create-publicacion-modal/create-publicacion-modal';
 import { EditPerfilModal } from './edit-perfil/edit-perfil-modal';
 import { Userservice } from '../../core/services/user.service';
+import { ConfirmModal } from '../../shared/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-perfil-view',
   standalone: true,
-  imports: [CommonModule, DatePipe, PublicacionCard, CreatePublicacionModal, EditPerfilModal],
+  imports: [CommonModule, DatePipe, PublicacionCard, CreatePublicacionModal, EditPerfilModal, ConfirmModal],
   templateUrl: './perfil-view.html',
   styleUrl: './perfil-view.css',
 })
@@ -26,6 +27,8 @@ export class PerfilView implements OnInit {
 
   isModalOpen = false;
   isEditModalOpen = false;
+
+  publicacionAEliminar: Publicacion | null = null;
 
   constructor(
     private authService: AuthService,
@@ -95,14 +98,29 @@ export class PerfilView implements OnInit {
       });
   }
 
-  handleDelete(publicacionId: string): void {
-    this.publicacionesService.handleDelete(publicacionId, this.publicaciones)
+  onConfirmDelete(): void {
+    if (!this.publicacionAEliminar) return;
+
+    this.publicacionesService.handleDelete(this.publicacionAEliminar._id!, this.publicaciones)
       .subscribe({
         next: (updatedPublicaciones) => {
           this.publicaciones = updatedPublicaciones;
+          this.publicacionAEliminar = null;
         },
-        error: (err) => console.error('Error al eliminar la publicación.', err)
+        error: (err) => {
+          console.error('Error al eliminar la publicación.', err);
+          this.errorMessage = 'Error al eliminar la publicación.';
+          this.publicacionAEliminar = null;
+        }
       });
+  }
+
+  onDeleteRequest(publicacion: Publicacion): void {
+    this.publicacionAEliminar = publicacion;
+  }
+
+  onCancelDelete(): void {
+    this.publicacionAEliminar = null;
   }
 
   addNewPublicacion(newPublicacion: Publicacion): void {
