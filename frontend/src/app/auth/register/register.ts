@@ -4,11 +4,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { User } from '../../core/interfaces/user.interface';
 import { CommonModule } from '@angular/common';
+import { ImagenDefaultDirective } from '../../core/directives/img-default.directive';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ImagenDefaultDirective],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -23,25 +24,35 @@ export class Register {
   }
 
   createForm(): FormGroup {
-    return this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellido: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      nombreUsuario: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]],
-      confirmPassword: ['', [Validators.required]],
-      fechaNacimiento: ['', [Validators.required]],
-      descripcion: ['', [Validators.maxLength(500)]],
-    }, { validators: this.passwordMatchValidator })
+    return this.fb.group(
+      {
+        nombre: ['', [Validators.required, Validators.minLength(2)]],
+        apellido: ['', [Validators.required, Validators.minLength(2)]],
+        email: ['', [Validators.required, Validators.email]],
+        nombreUsuario: ['', [Validators.required, Validators.minLength(3)]],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/),
+          ],
+        ],
+        confirmPassword: ['', [Validators.required]],
+        fechaNacimiento: ['', [Validators.required]],
+        descripcion: ['', [Validators.maxLength(500)]],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
 
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword');
 
-    if(confirmPassword && password !== confirmPassword.value) {
+    if (confirmPassword && password !== confirmPassword.value) {
       return { passwordMismatch: true };
-    } 
+    }
     return null;
   }
 
@@ -62,25 +73,25 @@ export class Register {
   }
 
   onSubmit(): void {
-    if(this.registerForm.valid) {
+    if (this.registerForm.valid) {
       const userData: User = {
         ...this.registerForm.value,
-        perfil: 'usuario'
+        perfil: 'usuario',
       };
 
       console.log('Fijate los datos que se van a enviar, a ver que pasa:');
       console.log('userData:', userData);
 
       const formData = new FormData();
-      Object.keys(userData).forEach(key => {
-        if(key !== 'confirmPassword') {
+      Object.keys(userData).forEach((key) => {
+        if (key !== 'confirmPassword') {
           const value = userData[key as keyof User];
-          console.log(` campo por campo: ${key}: ${value}`); 
+          console.log(` campo por campo: ${key}: ${value}`);
           formData.append(key, value as string);
         }
       });
 
-      if(this.imagenPerfil) {
+      if (this.imagenPerfil) {
         formData.append('imagenPerfil', this.imagenPerfil);
       }
 
@@ -94,23 +105,38 @@ export class Register {
         error: (error) => {
           console.error('Error completo en registro', error);
           console.error('Respuesta del back:', error.error);
-          if (error.status === 409){
+          if (error.status === 409) {
             console.log('El usuario o correo ya existe. Soorryy');
           } else {
             console.log('No se pudo registrar 😢');
           }
-          
-        }
+        },
       });
     }
   }
 
-  get nombre() { return this.registerForm.get('nombre'); }
-  get apellido() { return this.registerForm.get('apellido'); }
-  get email() { return this.registerForm.get('email'); }
-  get nombreUsuario() { return this.registerForm.get('nombreUsuario'); }
-  get password() { return this.registerForm.get('password'); }
-  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
-  get fechaNacimiento() { return this.registerForm.get('fechaNacimiento'); }
-  get descripcion() { return this.registerForm.get('descripcion'); }
+  get nombre() {
+    return this.registerForm.get('nombre');
+  }
+  get apellido() {
+    return this.registerForm.get('apellido');
+  }
+  get email() {
+    return this.registerForm.get('email');
+  }
+  get nombreUsuario() {
+    return this.registerForm.get('nombreUsuario');
+  }
+  get password() {
+    return this.registerForm.get('password');
+  }
+  get confirmPassword() {
+    return this.registerForm.get('confirmPassword');
+  }
+  get fechaNacimiento() {
+    return this.registerForm.get('fechaNacimiento');
+  }
+  get descripcion() {
+    return this.registerForm.get('descripcion');
+  }
 }

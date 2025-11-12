@@ -7,7 +7,7 @@
           [src]="getAvatarUrl(comentario.usuarioId)"
           alt="Avatar" 
           class="avatar-comentario"
-          onError="this.src='imagenes/avatar-default.png'">
+          appImgDefault>
         <div class="comentario-body">
           <span class="comentario-user">{{ comentario.usuarioId.nombreUsuario || 'Usuario' }}</span>
           <p class="comentario-content">{{ comentario.contenido }}</p>
@@ -19,14 +19,13 @@
       <p class="no-comentarios">Sé el primero en comentar!</p>
     }
   </div>
-
   <form class="comentario-form" [formGroup]="comentarioForm" (ngSubmit)="enviarComentario()">
     @if (currentUser) {
       <img 
         [src]="getAvatarUrl(currentUser)"
         alt="Tu Avatar" 
         class="avatar-comentario"
-        onError="this.src='imagenes/avatar-default.png'">
+        appImgDefault>
     }
     <input 
       type="text"

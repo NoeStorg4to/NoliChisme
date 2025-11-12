@@ -126,7 +126,11 @@
             <label for="imagenPerfil">Imagen de perfil</label>
             @if (previewUrl) {
                 <div class="avatar-preview-container">
-                    <img [src]="previewUrl" alt="Vista previa de tu avatar" class="avatar-preview">
+                    <img 
+                        [src]="previewUrl" 
+                        alt="Vista previa de tu avatar" 
+                        class="avatar-preview"
+                        appImgDefault>
                 </div>
             }
             <input type="file" id="imagenPerfil" (change)="onFileSelected($event)" accept="image/*" class="form-control">

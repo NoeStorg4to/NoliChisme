@@ -13,10 +13,10 @@
 
         <div class="form-group text-center">
           <img 
-            [src]="previewUrl || 'imagenes/avatar-default.png'" 
+            [src]="previewUrl || 'imagenes/Noli-sonrisita.png'" 
             alt="Avatar" 
             class="avatar-preview"
-            onError="this.src='imagenes/avatar-default.png'">
+            appImgDefault>
           <label for="imagenPerfil" class="btn btn-link">Cambiar foto de perfil</label>
           <input type="file" id="imagenPerfil" (change)="onFileSelected($event)" accept="image/*" class="file-input">
         </div>

@@ -4,15 +4,16 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { User } from '../../../core/interfaces/user.interface';
 import { Userservice } from '../../../core/services/user.service';
 import { enviroment } from '../../../../enviroments/enviroment';
+import { ImagenDefaultDirective } from '../../../core/directives/img-default.directive';
 
 @Component({
   selector: 'app-edit-perfil-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ImagenDefaultDirective],
   templateUrl: './edit-perfil-modal.html',
   styleUrl: './edit-perfil-modal.css',
 })
-export class EditPerfilModal implements OnInit  {
+export class EditPerfilModal implements OnInit {
   @Input() user!: User;
   @Output() close = new EventEmitter<void>();
   @Output() userUpdated = new EventEmitter<User>();
@@ -23,10 +24,7 @@ export class EditPerfilModal implements OnInit  {
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private userService: Userservice
-  ) {
+  constructor(private fb: FormBuilder, private userService: Userservice) {
     this.editForm = this.fb.group({
       nombreUsuario: ['', [Validators.required, Validators.minLength(3)]],
       descripcion: ['', [Validators.maxLength(500)]],

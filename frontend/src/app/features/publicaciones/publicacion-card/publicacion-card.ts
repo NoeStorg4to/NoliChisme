@@ -2,17 +2,18 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { enviroment } from '../../../../enviroments/enviroment';
 import { Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ComentariosSection } from '../comentarios-section/comentarios-section';
 import { TiempoTranscurrido } from '../../../core/pipes/tiempo-transcurrido.pipe';
 import { ResaltarDirective } from '../../../core/directives/resaltar.directive';
-import { TruncarPipe } from '../../../core/pipes/truncar.pipe';
-// import { ConfirmModal } from '../../../shared/confirm-modal/confirm-modal';
+import { ImagenDefaultDirective } from '../../../core/directives/img-default.directive';
+
+
 
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
-  imports: [CommonModule, ComentariosSection, TiempoTranscurrido, ResaltarDirective],
+  imports: [CommonModule, ComentariosSection, TiempoTranscurrido, ResaltarDirective, ImagenDefaultDirective],
   templateUrl: './publicacion-card.html',
   styleUrl: './publicacion-card.css',
 })

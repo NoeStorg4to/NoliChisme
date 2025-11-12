@@ -6,11 +6,12 @@ import { enviroment } from '../../../../enviroments/enviroment';
 import { PublicacionesService } from '../../../core/services/publicaciones.service';
 import { CommonModule } from '@angular/common';
 import { EnfocarDirective } from '../../../core/directives/enfocar.directive';
+import { ImagenDefaultDirective } from '../../../core/directives/img-default.directive';
 
 @Component({
   selector: 'app-comentarios-section',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EnfocarDirective],
+  imports: [CommonModule, ReactiveFormsModule, EnfocarDirective, ImagenDefaultDirective],
   templateUrl: './comentarios-section.html',
   styleUrl: './comentarios-section.css',
 })

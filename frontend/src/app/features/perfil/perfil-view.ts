@@ -11,6 +11,7 @@ import { EditPerfilModal } from './edit-perfil/edit-perfil-modal';
 import { Userservice } from '../../core/services/user.service';
 import { ConfirmModal } from '../../shared/confirm-modal/confirm-modal';
 import { TruncarPipe } from '../../core/pipes/truncar.pipe';
+import { ImagenDefaultDirective } from '../../core/directives/img-default.directive';
 
 @Component({
   selector: 'app-perfil-view',
@@ -23,6 +24,7 @@ import { TruncarPipe } from '../../core/pipes/truncar.pipe';
     EditPerfilModal,
     ConfirmModal,
     TruncarPipe,
+    ImagenDefaultDirective,
   ],
   templateUrl: './perfil-view.html',
   styleUrl: './perfil-view.css',

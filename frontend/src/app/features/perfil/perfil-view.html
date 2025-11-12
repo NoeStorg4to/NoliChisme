@@ -2,15 +2,15 @@
   @if (user) {
     <div class="perfil-header">
       <img 
-        [src]="fullAvatarUrl || 'imagenes/avatar-default.png'" 
+        [src]="fullAvatarUrl || 'imagenes/Noli-sonrisita.png'" 
         alt="Foto de perfil" 
         class="perfil-avatar"
-        onError="this.src='imagenes/avatar-default.png'">
+        appImgDefault>
       <div class="perfil-info">
         <h1 class="perfil-nombre">{{ user.nombre }} {{ user.apellido }}</h1>
         <h2 class="perfil-username">&#64;{{ user.nombreUsuario }}</h2>
         <p class="perfil-email">{{ user.email }}</p>
-        <p class="perfil-fecha">Se unió el: {{ user.fechaNacimiento | date:'longDate' }}</p>
+        <p class="perfil-fecha">Cumpleaños: {{ user.fechaNacimiento | date:'longDate' }}</p>
         @if (user.descripcion) {
           <p class="perfil-descripcion">{{ user.descripcion | truncar:20}}</p>
         }
