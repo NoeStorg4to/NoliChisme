@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // HABILITAR CORS CON EL PUERTO DE ANGULAR (4200)
   app.enableCors({
-    origin: 'https://noli-chisme.vercel.app', //'http://localhost:4200'
+    origin: 'http://localhost:4200', // 'https://noli-chisme.vercel.app'
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

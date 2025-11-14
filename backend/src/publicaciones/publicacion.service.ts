@@ -55,7 +55,7 @@ export class PublicacionesService {
     const data = await this.publicacionModel
       .find(filter)
       .sort(sortOptions)
-      .skip(offset)
+      .skip(offset) //salta a la 2da pag si es mas de 10 el offset
       .limit(limit)
       .populate('usuarioId', 'nombreUsuario imagenPerfil')
       .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
