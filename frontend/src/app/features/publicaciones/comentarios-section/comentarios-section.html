@@ -15,10 +15,22 @@
         </div>
       </div>
     }
-    @if (publicacion.comentarios.length === 0) {
+    @if (comentarios.length === 0 && !isLoadingComentarios) {
       <p class="no-comentarios">Sé el primero en comentar!</p>
     }
+    @if (isLoadingComentarios && comentarios.length === 0) {
+      <p class="no-comentarios">Cargando comentarios...</p>
+    }
   </div>
+  @if (comentarios.length < totalComentarios) {
+    <button class="btn-cargar-mas" (click)="cargarComentarios()" [disabled]="isLoadingComentarios">
+      @if(isLoadingComentarios) {
+        Cargando...
+      } @else {
+        Cargar más comentarios
+      }
+    </button>
+  }
   <form class="comentario-form" [formGroup]="comentarioForm" (ngSubmit)="enviarComentario()">
     @if (currentUser) {
       <img 

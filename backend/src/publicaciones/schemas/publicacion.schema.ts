@@ -35,3 +35,9 @@ export class Publicacion extends Document {
 }
 
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);
+
+PublicacionSchema.virtual('comentariosCount', {
+  count: true,
+  localField: 'comentarios',
+  foreignField: '',
+});

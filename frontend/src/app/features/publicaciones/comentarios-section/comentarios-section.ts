@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { Publicacion } from '../../../core/interfaces/publicacion.interface';
+import { Comentario, Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { enviroment } from '../../../../enviroments/enviroment';
@@ -18,11 +18,16 @@ import { ImagenDefaultDirective } from '../../../core/directives/img-default.dir
 export class ComentariosSection implements OnInit {
   @Input() publicacion!: Publicacion;
   @Input() currentUser!: User | null;
-  @Output() comentarioAgregado = new EventEmitter<Publicacion>();
+  @Output() comentarioAgregado = new EventEmitter<Comentario>();
 
   comentarioForm: FormGroup;
   isLoading = false;
   apiBaseUrl = enviroment.apiUrl;
+  isLoadingComentarios = false;
+
+  comentarios: Comentario[] = [];
+  limit = 5;
+  totalComentarios = 0;
 
   constructor(private fb: FormBuilder, private publicacionesService: PublicacionesService) {
     this.comentarioForm = this.fb.group({
@@ -31,16 +36,40 @@ export class ComentariosSection implements OnInit {
   }
 
   ngOnInit(): void {
-    this.sortComentarios();
-  }
-
-  sortComentarios(): void {
-    if (this.publicacion?.comentarios) {
-      this.publicacion.comentarios.sort(
-        (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
-      );
+    // this.sortComentarios();
+    this.totalComentarios = this.publicacion.comentariosCount || 0;
+    if (this.totalComentarios > 0) {
+      this.cargarComentarios();
     }
   }
+
+  cargarComentarios(): void {
+    if (!this.publicacion._id) return;
+
+    const currentOffset = this.comentarios.length;
+    this.isLoadingComentarios = true;
+
+    this.publicacionesService.getComentarios(this.publicacion._id, currentOffset, this.limit)
+      .subscribe({
+        next: (response) => {
+          this.comentarios = [...this.comentarios, ...response.data]; 
+          this.totalComentarios = response.total;
+          this.isLoadingComentarios = false;
+        },
+        error: (err) => {
+          console.error('Error al cargar comentarios', err);
+          this.isLoadingComentarios = false;
+        }
+      });
+  }
+
+  // sortComentarios(): void {
+  //   if (this.publicacion?.comentarios) {
+  //     this.publicacion.comentarios.sort(
+  //       (a, b) => new Date(a.fechaCreacion).getTime() - new Date(b.fechaCreacion).getTime()
+  //     );
+  //   }
+  // }
 
   enviarComentario(): void {
     if (this.comentarioForm.invalid || this.isLoading || !this.publicacion._id) {
@@ -51,10 +80,12 @@ export class ComentariosSection implements OnInit {
     const contenido = this.comentarioForm.value.contenido;
 
     this.publicacionesService.addComentario(this.publicacion._id, contenido).subscribe({
-      next: (publicacionActualizada) => {
+      next: (nuevoComentario) => {
         this.isLoading = false;
         this.comentarioForm.reset();
-        this.comentarioAgregado.emit(publicacionActualizada);
+        this.comentarios.push(nuevoComentario);
+        this.totalComentarios++;
+        this.comentarioAgregado.emit(nuevoComentario);
       },
       error: (err) => {
         this.isLoading = false;

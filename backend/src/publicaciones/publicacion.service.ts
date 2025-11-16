@@ -9,6 +9,8 @@ import { Publicacion } from './schemas/publicacion.schema';
 import { Users } from '../users/schemas/users.schema';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { QueryPublicacionDto } from './dto/query-publicacion.dto';
+import { QueryComentariosDto } from './dto/query-comentario.dto';
+import { Comentario } from './schemas/comentario.schema';
 
 @Injectable()
 export class PublicacionesService {
@@ -151,5 +153,34 @@ export class PublicacionesService {
     ]);
 
     return publicacion;
+  }
+
+  async findComentarios(
+    publicacionId: string,
+    queryDto: QueryComentariosDto,
+  ): Promise<{ data: Comentario[]; total: number }> {
+    const { offset, limit } = queryDto;
+
+    const publicacion = await this.publicacionModel
+      .findById(publicacionId)
+      .select('comentarios')
+      .slice('comentarios', [offset, limit]) //le pido a mongo que de la lista me traiga los que estan en la posicion offset y offset+limit
+      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
+      .exec();
+
+    if (!publicacion) {
+      throw new NotFoundException('Publicación no encontrada');
+    }
+
+    const totalComentarios = await this.publicacionModel
+      .findById(publicacionId)
+      .select('comentarios')
+      .exec()
+      .then((p) => p?.comentarios.length || 0);
+
+    return {
+      data: publicacion.comentarios,
+      total: totalComentarios,
+    };
   }
 }
