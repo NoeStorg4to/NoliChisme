@@ -26,7 +26,7 @@ export class ComentariosSection implements OnInit {
   isLoadingComentarios = false;
 
   comentarios: Comentario[] = [];
-  limit = 5;
+  limit = 3;
   totalComentarios = 0;
 
   constructor(private fb: FormBuilder, private publicacionesService: PublicacionesService) {

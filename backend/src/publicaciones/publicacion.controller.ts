@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
 import { Users } from '../users/schemas/users.schema';
 import { CreateComentarioDto } from './dto/create-coments.dto';
+import { QueryComentariosDto } from './dto/query-comentario.dto';
 
 @UseGuards(JwtAuthGuard) // Protege todas las rutas de este controlador
 @Controller('publicaciones')
@@ -63,6 +64,13 @@ export class PublicacionesController {
       limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
     }),
   )
+  @Get(':id/comentarios')
+  getComentarios(
+    @Param('id') id: string,
+    @Query() queryDto: QueryComentariosDto,
+  ) {
+    return this.publicacionesService.findComentarios(id, queryDto);
+  }
   create(
     @Body() createDto: CreatePublicacionDto,
     @GetUser() user: Users,

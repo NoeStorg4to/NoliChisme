@@ -15,7 +15,7 @@ export class Comentario {
   @Prop({ required: true, trim: true })
   contenido: string;
 
-  // 'fechaCreacion' se añade automáticamente por timestamps
+  declare fechaCreacion: Date;
 }
 
 export const ComentarioSchema = SchemaFactory.createForClass(Comentario);

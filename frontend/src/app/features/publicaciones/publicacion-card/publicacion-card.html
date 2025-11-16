@@ -30,24 +30,22 @@
     </button>
     <button class="btn-action btn-comment" (click)="toggleComentarios()">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-      <span>{{ publicacion.comentarios.length || 0 }}</span>
+      <span>{{ publicacion.comentariosCount || 0 }}</span>
     </button>
   </div>
   @if (isComentariosOpen) {
     <app-comentarios-section 
       [publicacion]="publicacion"
       [currentUser]="currentUser"
-      (comentarioAgregado)="actualizarPublicacion($event)">
+      (comentarioAgregado)="actualizarComentarios($event)">
     </app-comentarios-section>
   }
 
   <div class="card-comments">
-    @if (publicacion.comentarios && publicacion.comentarios.length > 0) {
-      <div class="comment">
-      </div>
-      @if (publicacion.comentarios.length > 1) {
-        <a class="view-all-comments">Ver los {{ publicacion.comentarios.length }} comentarios</a>
-      }
+    @if (!isComentariosOpen && publicacion.comentariosCount > 0) {
+      <a class="view-all-comments" (click)="toggleComentarios()">
+        Ver los {{ publicacion.comentariosCount }} comentarios
+      </a>
     }
   </div>
 </div>

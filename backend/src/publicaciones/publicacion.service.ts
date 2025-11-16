@@ -12,10 +12,16 @@ import { QueryPublicacionDto } from './dto/query-publicacion.dto';
 import { QueryComentariosDto } from './dto/query-comentario.dto';
 import { Comentario } from './schemas/comentario.schema';
 
+// type PublicacionConCount = Omit<Publicacion, 'comentarios'> & {
+//   comentariosCount: number;
+//   comentarios: [];
+// };
+
 @Injectable()
 export class PublicacionesService {
   constructor(
     @InjectModel(Publicacion.name) private publicacionModel: Model<Publicacion>,
+    @InjectModel(Users.name) private userModel: Model<Users>,
   ) {}
 
   async create(
@@ -27,10 +33,12 @@ export class PublicacionesService {
       ...createDto,
       usuarioId,
       imagenUrl,
+      comentariosCount: 0,
     });
     await nuevaPublicacion.save();
 
     await nuevaPublicacion.populate('usuarioId', 'nombreUsuario imagenPerfil');
+    // const pubObject = nuevaPublicacion.toObject();
     return nuevaPublicacion;
   }
 
@@ -58,7 +66,8 @@ export class PublicacionesService {
         .skip(skip)
         .limit(limit)
         .populate('usuarioId', 'nombreUsuario imagenPerfil')
-        .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
+        // .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
+        .select('-comentarios')
         .exec(),
       this.publicacionModel.countDocuments(filter),
     ]);
@@ -100,36 +109,46 @@ export class PublicacionesService {
 
   // METODOS PARA LIKESSS
   async like(id: string, usuarioId: Types.ObjectId): Promise<Publicacion> {
-    const publicacion = await this.publicacionModel.findByIdAndUpdate(
-      id,
-      {
-        $addToSet: { likes: usuarioId }, // $addToSet evita duplicados
-        // Se usa $inc para incrementar likesCount solo si $addToSet tuvo éxito
-      },
-      { new: true },
-    );
+    const publicacion = await this.publicacionModel
+      .findOneAndUpdate(
+        { _id: id, likes: { $ne: usuarioId } },
+        {
+          $addToSet: { likes: usuarioId }, // $addToSet evita duplicados
+          // Se usa $inc para incrementar likesCount solo si $addToSet tuvo éxito
+          $inc: { likesCount: 1 },
+        },
+        { new: true },
+      )
+      .populate('usuarioId', 'nombreUsuario imagenPerfil')
+      .select('-comentarios');
 
     if (!publicacion) {
-      throw new NotFoundException('Publicación no encontrada');
+      return this.findOne(id);
+      // throw new NotFoundException('Publicación no encontrada');
     }
-    publicacion.likesCount = publicacion.likes.length;
-    return publicacion.save();
+    // return publicacion.save();
+    return publicacion;
   }
 
   async unlike(id: string, usuarioId: Types.ObjectId): Promise<Publicacion> {
-    const publicacion = await this.publicacionModel.findByIdAndUpdate(
-      id,
-      {
-        $pull: { likes: usuarioId }, // $pull saca el id del array
-      },
-      { new: true },
-    );
+    const publicacion = await this.publicacionModel
+      .findOneAndUpdate(
+        { _id: id, likes: { $in: [usuarioId] } },
+        {
+          $pull: { likes: usuarioId }, // $pull saca el id del array
+          $inc: { likesCount: -1 },
+        },
+        { new: true },
+      )
+      .populate('usuarioId', 'nombreUsuario imagenPerfil')
+      .select('-comentarios');
 
     if (!publicacion) {
-      throw new NotFoundException('Publicación no encontrada');
+      return this.findOne(id);
+      // throw new NotFoundException('Publicación no encontrada');
     }
-    publicacion.likesCount = publicacion.likes.length;
-    return publicacion.save();
+    // return publicacion.save();
+    return publicacion;
   }
 
   // METODOS PARA COMENTARIO
@@ -137,22 +156,47 @@ export class PublicacionesService {
     publicacionId: string,
     usuarioId: Types.ObjectId,
     contenido: string,
-  ): Promise<Publicacion> {
-    const publicacion = await this.findOne(publicacionId);
+  ): Promise<any> {
+    // const publicacion = await this.findOne(publicacionId);
     const nuevoComentario = {
       _id: new Types.ObjectId(),
       usuarioId: usuarioId,
       contenido: contenido,
+      fechaCreacion: new Date(),
     };
 
-    publicacion.comentarios.push(nuevoComentario);
-    await publicacion.save();
-    await publicacion.populate([
-      { path: 'usuarioId', select: 'nombreUsuario imagenPerfil' },
-      { path: 'comentarios.usuarioId', select: 'nombreUsuario imagenPerfil' },
-    ]);
+    // publicacion.comentarios.push(nuevoComentario);
+    // await publicacion.save();
+    // await publicacion.populate([
+    //   { path: 'usuarioId', select: 'nombreUsuario imagenPerfil' },
+    //   { path: 'comentarios.usuarioId', select: 'nombreUsuario imagenPerfil' },
+    // ]);
 
-    return publicacion;
+    // return publicacion;
+    const publicacionActualizada =
+      await this.publicacionModel.findByIdAndUpdate(publicacionId, {
+        $push: {
+          comentarios: {
+            $each: [nuevoComentario],
+            $position: 0,
+          },
+        },
+        $inc: { comentariosCount: 1 },
+      });
+    if (!publicacionActualizada) {
+      throw new NotFoundException('Publicación no encontrada');
+    }
+
+    const comentarioConUsuario = await this.userModel
+      .findById(usuarioId, 'nombreUsuario imagenPerfil')
+      .lean();
+
+    return {
+      _id: nuevoComentario._id.toHexString(),
+      usuarioId: comentarioConUsuario,
+      contenido: nuevoComentario.contenido,
+      fechaCreacion: nuevoComentario.fechaCreacion,
+    };
   }
 
   async findComentarios(
@@ -172,14 +216,22 @@ export class PublicacionesService {
       throw new NotFoundException('Publicación no encontrada');
     }
 
-    const totalComentarios = await this.publicacionModel
+    // const totalComentarios = await this.publicacionModel
+    //   .findById(publicacionId)
+    //   .select('comentarios')
+    //   .exec()
+    //   .then((p) => p?.comentarios.length || 0);
+    const totalPub = await this.publicacionModel
       .findById(publicacionId)
       .select('comentarios')
-      .exec()
-      .then((p) => p?.comentarios.length || 0);
+      .exec();
+    const totalComentarios = totalPub ? totalPub.comentarios.length : 0;
+    const dataOrdenada = publicacion.comentarios.sort(
+      (a, b) => b.fechaCreacion.getTime() - a.fechaCreacion.getTime(),
+    );
 
     return {
-      data: publicacion.comentarios,
+      data: dataOrdenada,
       total: totalComentarios,
     };
   }
