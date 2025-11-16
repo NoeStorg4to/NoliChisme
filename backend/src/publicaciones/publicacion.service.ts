@@ -32,38 +32,38 @@ export class PublicacionesService {
     return nuevaPublicacion;
   }
 
-  async findAll(
-    queryDto: QueryPublicacionDto,
-  ): Promise<{ data: Publicacion[]; total: number }> {
-    const { sortBy, usuarioId, offset, limit } = queryDto;
+  async findAll(queryDto: QueryPublicacionDto): Promise<{
+    data: Publicacion[];
+    total: number;
+    paginaActual: number;
+    totalPaginas: number;
+  }> {
+    const { sortBy, usuarioId, page, limit } = queryDto;
 
     const filter: FilterQuery<Publicacion> = { isDeleted: false };
     if (usuarioId) {
       filter.usuarioId = new Types.ObjectId(usuarioId);
     }
 
-    // const sortOptions = {};
-    // if (sortBy === 'meGusta') {
-    //   sortOptions['likesCount'] = -1;
-    // } else {
-    //   sortOptions['fechaCreacion'] = -1;
-    // }
-
     const sortOptions: Record<string, 1 | -1> =
       sortBy === 'meGusta' ? { likesCount: -1 } : { fechaCreacion: -1 };
 
-    const data = await this.publicacionModel
-      .find(filter)
-      .sort(sortOptions)
-      .skip(offset) //salta a la 2da pag si es mas de 10 el offset
-      .limit(limit)
-      .populate('usuarioId', 'nombreUsuario imagenPerfil')
-      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
-      .exec();
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.publicacionModel
+        .find(filter)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .populate('usuarioId', 'nombreUsuario imagenPerfil')
+        .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
+        .exec(),
+      this.publicacionModel.countDocuments(filter),
+    ]);
 
-    const total = await this.publicacionModel.countDocuments(filter);
+    const totalPaginas = Math.ceil(total / limit);
 
-    return { data, total };
+    return { data, total, paginaActual: page, totalPaginas };
   }
 
   async findOne(id: string): Promise<Publicacion> {

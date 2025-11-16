@@ -14,7 +14,7 @@ export class QueryPublicacionDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  offset: number = 0;
+  page: number = 1;
 
   @IsOptional()
   @Type(() => Number)

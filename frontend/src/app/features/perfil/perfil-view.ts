@@ -12,6 +12,7 @@ import { Userservice } from '../../core/services/user.service';
 import { ConfirmModal } from '../../shared/confirm-modal/confirm-modal';
 import { TruncarPipe } from '../../core/pipes/truncar.pipe';
 import { ImagenDefaultDirective } from '../../core/directives/img-default.directive';
+import { Paginacion } from '../../shared/paginacion/paginacion';
 
 @Component({
   selector: 'app-perfil-view',
@@ -25,6 +26,7 @@ import { ImagenDefaultDirective } from '../../core/directives/img-default.direct
     ConfirmModal,
     TruncarPipe,
     ImagenDefaultDirective,
+    Paginacion,
   ],
   templateUrl: './perfil-view.html',
   styleUrl: './perfil-view.css',
@@ -41,9 +43,11 @@ export class PerfilView implements OnInit {
   publicacionAEliminar: Publicacion | null = null;
 
   limit: number = 3;
-  offset: number = 0;
+  // offset: number = 0;
   totalPublicaciones: number = 0;
   isLoadingMore: boolean = false;
+  paginaActual: number = 1;
+  totalPaginas: number = 1;
 
   constructor(
     private authService: AuthService,
@@ -57,7 +61,7 @@ export class PerfilView implements OnInit {
         this.user = user;
         this.buildAvatarUrl();
         if (this.publicaciones.length === 0) {
-          this.loadUserPosts();
+          this.loadUserPosts(1);
         }
       } else {
         this.errorMessage = 'No se pudo cargar la información del usuario.';
@@ -93,43 +97,46 @@ export class PerfilView implements OnInit {
   //   });
   // }
 
-  loadUserPosts(loadMore: boolean = false): void {
+  loadUserPosts(page: number): void {
     if (!this.user?._id) return;
 
-    if (loadMore) {
-      this.isLoadingMore = true;
-    } else {
-      this.isLoading = true;
-      this.offset = 0;
-    }
+    this.isLoading = true;
+    this.paginaActual = page;
+    // if (loadMore) {
+    //   this.isLoadingMore = true;
+    // } else {
+    //   this.isLoading = true;
+    //   this.offset = 0;
+    // }
 
     this.publicacionesService
-      .getPublicaciones('fechaCreacion', this.limit, this.offset, this.user._id)
+      .getPublicaciones('fechaCreacion', this.limit, this.paginaActual, this.user._id)
       .subscribe({
         next: (response) => {
-          // Acumula posteos si es "cargar mas" y sino lo reemplaza
-          this.publicaciones = loadMore ? [...this.publicaciones, ...response.data] : response.data;
-
+          this.publicaciones = response.data;
           this.totalPublicaciones = response.total;
-          this.offset = this.publicaciones.length; // Actualiza el offset
-
+          this.totalPaginas = response.totalPaginas;
+          this.paginaActual = response.paginaActual;
           this.isLoading = false;
-          this.isLoadingMore = false;
         },
         error: (err) => {
           this.errorMessage = 'Error al cargar las publicaciones del usuario.';
           console.error(err);
           this.isLoading = false;
-          this.isLoadingMore = false;
         },
       });
   }
 
-  loadMore(): void {
-    if (this.publicaciones.length < this.totalPublicaciones && !this.isLoadingMore) {
-      this.loadUserPosts(true);
-    }
+  onPaginaCambiada(page: number): void {
+    this.loadUserPosts(page);
+    window.scrollTo(0, 0);
   }
+
+  // loadMore(): void {
+  //   if (this.publicaciones.length < this.totalPublicaciones && !this.isLoadingMore) {
+  //     this.loadUserPosts(true);
+  //   }
+  // }
 
   handleLikeToggle(publicacionId: string): void {
     this.publicacionesService.handleLikeToggle(publicacionId, this.publicaciones).subscribe({
@@ -168,9 +175,10 @@ export class PerfilView implements OnInit {
   }
 
   addNewPublicacion(newPublicacion: Publicacion): void {
-    this.publicaciones = [newPublicacion, ...this.publicaciones];
-    this.totalPublicaciones++;
-    this.offset++;
+    this.loadUserPosts(1);
+    // this.publicaciones = [newPublicacion, ...this.publicaciones];
+    // this.totalPublicaciones++;
+    // this.offset++;
     this.isModalOpen = false;
   }
 

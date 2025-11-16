@@ -39,14 +39,12 @@
         </div>
       }
 
-      @if (!isLoading && publicaciones.length < totalPublicaciones) {
-        <button class="btn btn-primary btn-block" (click)="loadMore()" [disabled]="isLoadingMore">
-          @if (isLoadingMore) {
-            Cargando...
-          } @else {
-            Cargar más
-          }
-        </button>
+      @if (!isLoading && totalPaginas > 1) {
+        <app-paginacion
+          [paginaActual]="paginaActual"
+          [totalPaginas]="totalPaginas"
+          (paginaCambiada)="onPaginaCambiada($event)">
+        </app-paginacion>
       }
 
       @if (!isLoading && publicaciones.length === totalPublicaciones && publicaciones.length > 0) {

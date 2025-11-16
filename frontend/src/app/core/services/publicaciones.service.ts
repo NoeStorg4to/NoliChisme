@@ -13,8 +13,8 @@ export class PublicacionesService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
-  getPublicaciones(sortBy: string = 'fechaCreacion', limit: number = 10, offset: number = 0, usuarioId?: string): Observable<PublicacionesResponse>{
-    let params = new HttpParams().set('sortBy', sortBy).set('limit', limit.toString()).set('offset', offset.toString());
+  getPublicaciones(sortBy: string = 'fechaCreacion', limit: number = 10, page: number = 1, usuarioId?: string): Observable<PublicacionesResponse>{
+    let params = new HttpParams().set('sortBy', sortBy).set('limit', limit.toString()).set('page', page.toString());
 
     if(usuarioId) {
       params = params.append('usuarioId', usuarioId);

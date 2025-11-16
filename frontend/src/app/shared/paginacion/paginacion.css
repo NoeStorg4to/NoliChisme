@@ -1,0 +1,31 @@
+.paginacion-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.btn-pag {
+    border: 2px solid var(--primary-light);
+    color: var(--primary);
+    background: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-pag:hover:not(:disabled) {
+    background: var(--accent);
+}
+
+.btn-pag.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-pag:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

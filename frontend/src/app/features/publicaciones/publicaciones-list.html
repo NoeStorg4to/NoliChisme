@@ -57,18 +57,6 @@
     </app-create-publicacion-modal>
   }
 
-  <!-- <div class="publicaciones-container">
-    <div class="publicaciones-header">
-      <h1>Últimos Chismes</h1>
-      
-      
-      
-      <div class="sort-controls">
-        <span>Ordenar por:</span>
-        </div>
-    </div>
-  </div> -->
-
   @if (publicacionAEliminar) {
     <app-confirm-modal
       [message]="'Seguro que quieres eliminar este chisme? No se puede deshacer.'"
@@ -79,10 +67,12 @@
     </app-confirm-modal>
   }
 
-  @if (!isLoading && publicaciones.length < totalPublicaciones) {
-    <button class="btn btn-primary btn-load-more" (click)="loadMore()">
-      Cargar más
-    </button>
+  @if (!isLoading && publicaciones.length > 0) {
+    <app-paginacion
+      [paginaActual]="paginaActual"
+      [totalPaginas]="totalPaginas"
+      (paginaCambiada)="onPaginaCambiada($event)">
+    </app-paginacion>
   }
 
   @if (!isLoading && publicaciones.length === totalPublicaciones && publicaciones.length > 0) {

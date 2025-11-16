@@ -1,0 +1,26 @@
+@if (totalPaginas > 1) {
+  <div class="paginacion-container">
+    <button 
+      class="btn-pag" 
+      [disabled]="paginaActual === 1"
+      (click)="cambiarPagina(paginaActual - 1)">
+      &laquo;
+    </button>
+    
+    @for (pagina of paginas; track pagina) {
+      <button 
+        class="btn-pag"
+        [class.active]="pagina === paginaActual"
+        (click)="cambiarPagina(pagina)">
+        {{ pagina }}
+      </button>
+    }
+
+    <button 
+      class="btn-pag" 
+      [disabled]="paginaActual === totalPaginas"
+      (click)="cambiarPagina(paginaActual + 1)">
+      &raquo;
+    </button>
+  </div>
+}

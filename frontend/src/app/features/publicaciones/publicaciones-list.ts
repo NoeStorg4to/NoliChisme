@@ -8,11 +8,12 @@ import { PublicacionCard } from './publicacion-card/publicacion-card';
 import { FormsModule } from '@angular/forms';
 import { CreatePublicacionModal } from './create-publicacion/create-publicacion-modal/create-publicacion-modal';
 import { ConfirmModal } from '../../shared/confirm-modal/confirm-modal';
+import { Paginacion } from '../../shared/paginacion/paginacion';
 
 @Component({
   selector: 'app-publicaciones-list',
   standalone: true,
-  imports: [CommonModule, PublicacionCard, FormsModule, CreatePublicacionModal, ConfirmModal],
+  imports: [CommonModule, PublicacionCard, FormsModule, CreatePublicacionModal, ConfirmModal, Paginacion],
   templateUrl: './publicaciones-list.html',
   styleUrl: './publicaciones-list.css',
 })
@@ -21,14 +22,15 @@ export class PublicacionesList implements OnInit {
   currentUser: User | null = null;
   isLoading: boolean = true;
   errorMessage: string = '';
-
+  
   sortBy: string = 'fechaCreacion';
   limit: number = 10;
-  offset: number = 0;
+  // offset: number = 0;
   totalPublicaciones: number = 0;
+  paginaActual: number = 1;
+  totalPaginas: number = 1;
 
   isModalOpen = false;
-
   publicacionAEliminar: Publicacion | null = null;
 
   constructor(
@@ -38,21 +40,23 @@ export class PublicacionesList implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
-    this.loadPublicaciones();
+    this.loadPublicaciones(1);
   }
 
-  loadPublicaciones(loadMore: boolean = false): void {
+  loadPublicaciones(page: number): void {
     this.isLoading = true;
-    if (!loadMore) {
-      this.offset = 0;
-      this.publicaciones = [];
-    }
+    this.paginaActual = page;
+    // if (!loadMore) {
+    //   this.offset = 0;
+    //   this.publicaciones = [];
+    // }
 
-    this.publicacionesService.getPublicaciones(this.sortBy, this.limit, this.offset).subscribe({
+    this.publicacionesService.getPublicaciones(this.sortBy, this.limit, this.paginaActual).subscribe({
       next: (response) => {
-        this.publicaciones = loadMore ? [...this.publicaciones, ...response.data] : response.data;
+        this.publicaciones = response.data;
         this.totalPublicaciones = response.total;
-        this.offset = this.publicaciones.length;
+        this.totalPaginas = response.totalPaginas;
+        this.paginaActual = response.paginaActual;
         this.isLoading = false;
       },
       error: (err) => {
@@ -66,14 +70,19 @@ export class PublicacionesList implements OnInit {
   onSortChange(newSort: string): void {
     if (this.sortBy === newSort) return;
     this.sortBy = newSort;
-    this.loadPublicaciones(false);
+    this.loadPublicaciones(1);
   }
 
-  loadMore(): void {
-    if (this.publicaciones.length < this.totalPublicaciones) {
-      this.loadPublicaciones(true);
-    }
+  onPaginaCambiada(page: number): void {
+    this.loadPublicaciones(page);
+    window.scrollTo(0, 0); // subir al inicio de la página jii
   }
+
+  // loadMore(): void {
+  //   if (this.publicaciones.length < this.totalPublicaciones) {
+  //     this.loadPublicaciones(true);
+  //   }
+  // }
 
   handleLikeToggle(publicacionId: string): void {
     this.publicacionesService.handleLikeToggle(publicacionId, this.publicaciones).subscribe({
@@ -82,7 +91,7 @@ export class PublicacionesList implements OnInit {
       },
       error: (err) => {
         console.error('Error al actualizar el like', err);
-        this.loadPublicaciones(false);
+        this.loadPublicaciones(1);
       },
     });
   }
