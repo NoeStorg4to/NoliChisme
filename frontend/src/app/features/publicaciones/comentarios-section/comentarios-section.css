@@ -113,3 +113,107 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.btn-cargar-mas {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+  background-color: var(--accent);
+  border: 2px solid var(--primary-light);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-cargar-mas:hover:not(:disabled) {
+  background-color: var(--primary-light);
+  color: var(--white);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.btn-cargar-mas:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-edit-comentario {
+  background: none;
+  border: none;
+  color: var(--gray);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  transition: var(--transition);
+}
+
+.btn-edit-comentario:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+.comentario-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.comentario-editado {
+  font-style: italic;
+  margin-left: 0.25rem;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-form textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--primary-light);
+  font-family: var(--font-principal);
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.edit-actions button {
+  background: var(--light-gray);
+  color: var(--dark);
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.edit-actions button[type="submit"] {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.edit-actions button[type="submit"]:hover {
+  background: var(--primary-dark);
+}
+
+.edit-actions button[type="button"]:hover {
+  background: #e5e7eb;
+}

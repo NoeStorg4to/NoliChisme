@@ -111,7 +111,6 @@ export class ComentariosSection implements OnInit {
         this.comentarioForm.reset();
         this.comentarios.unshift(nuevoComentario); 
         this.totalComentarios++;
-        this.publicacion.comentariosCount++;
         this.noHayMasComentarios = this.comentarios.length >= this.totalComentarios;
         this.comentarioAgregado.emit();
       },

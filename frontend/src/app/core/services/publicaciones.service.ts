@@ -44,9 +44,9 @@ export class PublicacionesService {
     return this.http.post<Comentario>(`${this.apiUrl}/${publicacionId}/comentarios`, body);
   }
 
-  getComentarios(publicacionId: string, offset: number, limit: number): Observable<ComentariosPaginados> {
+  getComentarios(publicacionId: string, page: number, limit: number): Observable<ComentariosPaginados> {
     const params = new HttpParams()
-      .set('offset', offset.toString())
+      .set('page', page.toString())
       .set('limit', limit.toString());
     
     return this.http.get<ComentariosPaginados>(`${this.apiUrl}/${publicacionId}/comentarios`, { params });

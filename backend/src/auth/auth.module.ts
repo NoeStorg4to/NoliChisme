@@ -30,7 +30,7 @@ import { JwtStrategy } from './jwt.strategy';
           signOptions: {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             expiresIn: (configService.get<string>('jwtExpiresIn') ||
-              '10m') as any,
+              '15m') as any,
           },
         };
       },
