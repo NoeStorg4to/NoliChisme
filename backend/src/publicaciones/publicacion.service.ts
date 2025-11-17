@@ -9,6 +9,7 @@ import { Publicacion } from './schemas/publicacion.schema';
 import { Users } from '../users/schemas/users.schema';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { QueryPublicacionDto } from './dto/query-publicacion.dto';
+import { PublicacionesResponse } from './dto/publicacion-response.dto';
 
 @Injectable()
 export class PublicacionesService {
@@ -32,10 +33,8 @@ export class PublicacionesService {
     return nuevaPublicacion;
   }
 
-  async findAll(
-    queryDto: QueryPublicacionDto,
-  ): Promise<{ data: Publicacion[]; total: number }> {
-    const { sortBy, usuarioId, page, limit } = queryDto;
+  async findAll(queryDto: QueryPublicacionDto): Promise<PublicacionesResponse> {
+    const { sortBy, usuarioId, page = 1, limit = 10 } = queryDto;
 
     const filter: FilterQuery<Publicacion> = { isDeleted: false };
     if (usuarioId) {
@@ -51,19 +50,24 @@ export class PublicacionesService {
 
     const sortOptions: Record<string, 1 | -1> =
       sortBy === 'meGusta' ? { likesCount: -1 } : { fechaCreacion: -1 };
-
+    const skip = (page - 1) * limit;
     const data = await this.publicacionModel
       .find(filter)
       .sort(sortOptions)
-      .skip(page) //salta a la 2da pag si es mas de 10 el offset
+      .skip(skip) //salta a la 2da pag si es mas de 10 el offset
       .limit(limit)
       .populate('usuarioId', 'nombreUsuario imagenPerfil')
-      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
+      // .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil')
       .exec();
 
     const total = await this.publicacionModel.countDocuments(filter);
 
-    return { data, total };
+    return {
+      data,
+      total,
+      paginaActual: page,
+      totalPaginas: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: string): Promise<Publicacion> {
@@ -72,8 +76,8 @@ export class PublicacionesService {
         _id: id,
         isDeleted: false,
       })
-      .populate('usuarioId', 'nombreUsuario imagenPerfil')
-      .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil');
+      .populate('usuarioId', 'nombreUsuario imagenPerfil');
+    // .populate('comentarios.usuarioId', 'nombreUsuario imagenPerfil');
     if (!publicacion) {
       throw new NotFoundException('Publicación no encontrada');
     }
@@ -130,26 +134,25 @@ export class PublicacionesService {
     return publicacion.save();
   }
 
-  // METODOS PARA COMENTARIO
-  async addComentario(
-    publicacionId: string,
-    usuarioId: Types.ObjectId,
-    contenido: string,
-  ): Promise<Publicacion> {
-    const publicacion = await this.findOne(publicacionId);
-    const nuevoComentario = {
-      _id: new Types.ObjectId(),
-      usuarioId: usuarioId,
-      contenido: contenido,
-    };
+  // async addComentario(
+  //   publicacionId: string,
+  //   usuarioId: Types.ObjectId,
+  //   contenido: string,
+  // ): Promise<Publicacion> {
+  //   const publicacion = await this.findOne(publicacionId);
+  //   const nuevoComentario = {
+  //     _id: new Types.ObjectId(),
+  //     usuarioId: usuarioId,
+  //     contenido: contenido,
+  //   };
 
-    publicacion.comentarios.push(nuevoComentario);
-    await publicacion.save();
-    await publicacion.populate([
-      { path: 'usuarioId', select: 'nombreUsuario imagenPerfil' },
-      { path: 'comentarios.usuarioId', select: 'nombreUsuario imagenPerfil' },
-    ]);
+  //   publicacion.comentarios.push(nuevoComentario);
+  //   await publicacion.save();
+  //   await publicacion.populate([
+  //     { path: 'usuarioId', select: 'nombreUsuario imagenPerfil' },
+  //     { path: 'comentarios.usuarioId', select: 'nombreUsuario imagenPerfil' },
+  //   ]);
 
-    return publicacion;
-  }
+  //   return publicacion;
+  // }
 }

@@ -11,6 +11,7 @@ export interface Publicacion {
     likes: string[];
     likesCount: number;
     comentarios: Comentario[];
+    comentariosCount: number; 
     isDeleted?: boolean;
 }
 
@@ -19,6 +20,15 @@ export interface Comentario {
     usuarioId: User;
     contenido: string;
     fechaCreacion: Date;
+    publicacionId?: string;
+    modificado?: boolean;
+}
+
+export interface ComentariosPaginados {
+    data: Comentario[];
+    total: number;
+    paginaActual: number;
+    totalPaginas: number;
 }
 
 export interface PublicacionesResponse {

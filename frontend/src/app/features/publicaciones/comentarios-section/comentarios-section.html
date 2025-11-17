@@ -1,7 +1,10 @@
 <div class="comentarios-wrapper">
   
   <div class="comentarios-list">
-    @for (comentario of publicacion.comentarios; track comentario._id) {
+    @if (isLoading && comentarios.length === 0) {
+      <p class="no-comentarios">Cargando comentarios...</p>
+    }
+    @for (comentario of comentarios; track comentario._id) {
       <div class="comentario-item">
         <img 
           [src]="getAvatarUrl(comentario.usuarioId)"
@@ -10,13 +13,36 @@
           appImgDefault>
         <div class="comentario-body">
           <span class="comentario-user">{{ comentario.usuarioId.nombreUsuario || 'Usuario' }}</span>
-          <p class="comentario-content">{{ comentario.contenido }}</p>
-          <span class="comentario-fecha">{{ comentario.fechaCreacion | date:'short' }}</span>
+          
+          @if (editingCommentId !== comentario._id) {
+            <p class="comentario-content">{{ comentario.contenido }}</p>
+          } @else {
+            <form [formGroup]="editForm" (ngSubmit)="guardarEdicion(comentario)" class="edit-form">
+              <textarea formControlName="contenidoEdicion" appEnfocar></textarea>
+              <div class="edit-actions">
+                <button type="button" (click)="cancelarEdicion()">Cancelar</button>
+                <button type="submit" [disabled]="editForm.invalid">Guardar</button>
+              </div>
+            </form>
+          }
+          <div class="comentario-footer">
+            <span class="comentario-fecha">{{ comentario.fechaCreacion | date:'short' }}
+              @if (comentario.modificado) {
+                <span class="comentario-editado">(editado)</span>
+              }
+            </span>
+            @if (currentUser?._id === comentario.usuarioId._id && editingCommentId !== comentario._id) {
+              <button class="btn-edit-comentario" (click)="iniciarEdicion(comentario)">
+                Editar
+              </button>
+            }
+          </div>
         </div>
       </div>
-    }
-    @if (publicacion.comentarios.length === 0) {
-      <p class="no-comentarios">Sé el primero en comentar!</p>
+    } @empty {
+      @if (!isLoading) {
+        <p class="no-comentarios">Sé el primero en comentar!</p>
+      }
     }
   </div>
   <form class="comentario-form" [formGroup]="comentarioForm" (ngSubmit)="enviarComentario()">
@@ -29,11 +55,17 @@
     }
     <input 
       type="text"
-      formControlName="contenido" appEnfocar
+      formControlName="contenido" 
+      appEnfocar
       placeholder="Escribe un chisme..." 
       class="form-control-comentario">
     <button type="submit" [disabled]="comentarioForm.invalid || isLoading" class="btn-enviar">
-      Enviar
+      {{ isLoading ? '...' : 'Enviar' }}
     </button>
   </form>
+  @if (!noHayMasComentarios && comentarios.length > 0) {
+    <button class="btn-cargar-mas" (click)="cargarMas()" [disabled]="isLoadingMore">
+      {{ isLoadingMore ? 'Cargando...' : 'Cargar más chismes' }}
+    </button>
+  }
 </div>

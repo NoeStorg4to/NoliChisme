@@ -6,6 +6,8 @@ import { PublicacionesController } from './publicacion.controller';
 import { PublicacionesService } from './publicacion.service';
 import { Comentario, ComentarioSchema } from './schemas/comentario.schema';
 import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema';
+import { ComentarioService } from './comentario/comentario.service';
+import { ComentariosController } from './comentario/comentario.controller';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema';
     AuthModule,
     UsersModule,
   ],
-  controllers: [PublicacionesController],
-  providers: [PublicacionesService],
+  controllers: [PublicacionesController, ComentariosController],
+  providers: [PublicacionesService, ComentarioService],
 })
 export class PublicacionesModule {}

@@ -8,8 +8,6 @@ import { TiempoTranscurrido } from '../../../core/pipes/tiempo-transcurrido.pipe
 import { ResaltarDirective } from '../../../core/directives/resaltar.directive';
 import { ImagenDefaultDirective } from '../../../core/directives/img-default.directive';
 
-
-
 @Component({
   selector: 'app-publicacion-card',
   standalone: true,
@@ -78,7 +76,7 @@ export class PublicacionCard implements OnInit {
     this.isComentariosOpen = !this.isComentariosOpen;
   }
 
-  actualizarPublicacion(publicacionActualizada: Publicacion): void {
-    this.publicacion = publicacionActualizada;
+  onComentarioAgregado(): void {
+    this.publicacion.comentariosCount++;
   }
 }

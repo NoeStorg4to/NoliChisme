@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { enviroment } from '../../../enviroments/enviroment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, of } from 'rxjs';
-import { Comentario, Publicacion, PublicacionesResponse } from '../interfaces/publicacion.interface';
+import { Comentario, ComentariosPaginados, Publicacion, PublicacionesResponse } from '../interfaces/publicacion.interface';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -39,18 +39,23 @@ export class PublicacionesService {
     return this.http.delete<Publicacion>(`${this.apiUrl}/${id}/like`);
   }
 
-  addComentario(publicacionId: string, contenido: string): Observable<Publicacion> {
+  addComentario(publicacionId: string, contenido: string): Observable<Comentario> {
     const body = { contenido: contenido };
-    return this.http.post<Publicacion>(`${this.apiUrl}/${publicacionId}/comentarios`, body);
+    return this.http.post<Comentario>(`${this.apiUrl}/${publicacionId}/comentarios`, body);
   }
 
-  // getComentarios(publicacionId: string, offset: number, limit: number): Observable<ComentariosResponse> {
-  //   const params = new HttpParams()
-  //     .set('offset', offset.toString())
-  //     .set('limit', limit.toString());
+  getComentarios(publicacionId: string, offset: number, limit: number): Observable<ComentariosPaginados> {
+    const params = new HttpParams()
+      .set('offset', offset.toString())
+      .set('limit', limit.toString());
     
-  //   return this.http.get<ComentariosResponse>(`${this.apiUrl}/${publicacionId}/comentarios`, { params });
-  // }
+    return this.http.get<ComentariosPaginados>(`${this.apiUrl}/${publicacionId}/comentarios`, { params });
+  }
+
+  updateComentario(comentarioId: string, contenido: string): Observable<Comentario> {
+    const url = `${enviroment.apiUrl}/comentarios/${comentarioId}`; 
+    return this.http.put<Comentario>(url, { contenido });
+  }
 
   handleLikeToggle(publicacionId: string, publicaciones: Publicacion[]): Observable<Publicacion[]> {
     const currentUser = this.authService.getCurrentUser();
