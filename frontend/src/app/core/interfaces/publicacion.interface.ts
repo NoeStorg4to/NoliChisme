@@ -11,7 +11,6 @@ export interface Publicacion {
     likes: string[];
     likesCount: number;
     comentarios: Comentario[];
-    comentariosCount: number;
     isDeleted?: boolean;
 }
 
@@ -27,9 +26,4 @@ export interface PublicacionesResponse {
     total: number;
     paginaActual: number;
     totalPaginas: number;
-}
-
-export interface ComentariosResponse {
-    data: Comentario[];
-    total: number;
 }

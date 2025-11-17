@@ -28,17 +28,10 @@ export class Publicacion extends Document {
   @Prop({ type: [ComentarioSchema], default: [] })
   comentarios: Comentario[];
 
-  @Prop({ type: Number, default: 0 })
-  comentariosCount: number;
-
   @Prop({ default: false, index: true })
   isDeleted: boolean;
+
+  // 'fechaCreacion' se añade automáticamente por timestamps
 }
 
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);
-
-// PublicacionSchema.virtual('comentariosCount', {
-//   count: true,
-//   localField: 'comentarios',
-//   foreignField: '',
-// });

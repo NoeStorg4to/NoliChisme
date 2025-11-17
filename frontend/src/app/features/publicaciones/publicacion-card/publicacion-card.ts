@@ -1,12 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { enviroment } from '../../../../enviroments/enviroment';
-import { Comentario, Publicacion } from '../../../core/interfaces/publicacion.interface';
+import { Publicacion } from '../../../core/interfaces/publicacion.interface';
 import { User } from '../../../core/interfaces/user.interface';
 import { CommonModule } from '@angular/common';
 import { ComentariosSection } from '../comentarios-section/comentarios-section';
 import { TiempoTranscurrido } from '../../../core/pipes/tiempo-transcurrido.pipe';
 import { ResaltarDirective } from '../../../core/directives/resaltar.directive';
 import { ImagenDefaultDirective } from '../../../core/directives/img-default.directive';
+
+
 
 @Component({
   selector: 'app-publicacion-card',
@@ -76,10 +78,7 @@ export class PublicacionCard implements OnInit {
     this.isComentariosOpen = !this.isComentariosOpen;
   }
 
-  actualizarComentarios(nuevoComentario: Comentario): void {
-    // this.publicacion = publicacionActualizada;
-    if (nuevoComentario) {
-      this.publicacion.comentariosCount++;
-    }
+  actualizarPublicacion(publicacionActualizada: Publicacion): void {
+    this.publicacion = publicacionActualizada;
   }
 }
