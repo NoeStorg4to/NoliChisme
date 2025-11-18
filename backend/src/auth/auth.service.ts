@@ -6,6 +6,8 @@ import { LoginDto } from '../users/dto/login.dto';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Users } from 'src/users/schemas/users.schema';
+import { JwtPayload } from './jwt.playload.interface';
 
 @Injectable()
 export class AuthService {
@@ -68,6 +70,21 @@ export class AuthService {
     const { password, ...userSinPassword } = user.toObject();
     return {
       usuario: userSinPassword,
+      access_token: token,
+    };
+  }
+
+  refreshToken(user: Users) {
+    // ------------- ASYNC??????
+    const playload: JwtPayload = {
+      sub: user._id,
+      nombreUsuario: user.nombreUsuario,
+      email: user.email,
+      perfil: user.perfil as 'usuario' | 'administrador',
+    };
+    const token = this.jwtService.sign(playload);
+
+    return {
       access_token: token,
     };
   }

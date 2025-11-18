@@ -4,6 +4,7 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -12,6 +13,9 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from '../users/dto/login.dto';
+import { GetUser } from './get-user.decorator';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { Users } from 'src/users/schemas/users.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -54,5 +58,19 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('autorizar')
+  @UseGuards(JwtAuthGuard)
+  autorizar(@GetUser() user: Users) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userSinPassword } = user.toObject<Users>();
+    return userSinPassword;
+  }
+
+  @Post('refrescar')
+  @UseGuards(JwtAuthGuard)
+  refrescarToken(@GetUser() user: Users) {
+    return this.authService.refreshToken(user);
   }
 }

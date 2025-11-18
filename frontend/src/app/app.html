@@ -1,2 +1,12 @@
 <app-navbar></app-navbar>
 <router-outlet />
+
+@if (isSessionModalOpen) {
+  <app-confirm-modal
+    [message]="'Tu sesión está por expirar en 5 minutos. ¿Querés extenderla?'"
+    confirmButtonText="Sí, extender"
+    cancelButtonText="No, cerrar sesión"
+    (onConfirm)="onConfirmRefresh()"
+    (onClose)="onCancelLogout()">
+  </app-confirm-modal>
+}
