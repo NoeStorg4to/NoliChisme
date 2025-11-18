@@ -15,7 +15,7 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable()
 
   private sessionTimerSubscription?: Subscription;
-  private readonly TEN_MINUTES_IN_MS = 10 * 60 * 1000;
+  private readonly TEN_MINUTES_IN_MS = 10 * 60 * 1000; // 1 * 60 * 1000;
   public showSessionModal = new BehaviorSubject<boolean>(false);
   
   constructor(private http: HttpClient){

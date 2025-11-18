@@ -83,6 +83,7 @@ export class ComentarioService {
 
     comentario.contenido = contenido;
     comentario.modificado = true;
-    return comentario.save();
+    await comentario.save();
+    return comentario.populate('usuarioId', 'nombreUsuario imagenPerfil');
   }
 }
