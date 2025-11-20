@@ -39,11 +39,12 @@ export class Login {
 
     this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          if(this.adminService.isAdmin()){
-            this.router.navigate(['/admin-dashboard'])
+          const currentUser = this.authService.getCurrentUser();
+          if(currentUser && currentUser.perfil === 'administrador'){
+            this.router.navigate(['/admin/dashboard'])
           } else {
             console.log('Login exitosaah', response);
-            this.router.navigate(['publicaciones'])
+            this.router.navigate(['/publicaciones'])
           }
         },
         error: (error) => {

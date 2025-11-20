@@ -2,8 +2,13 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   ForbiddenException,
+  Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  Post,
   Put,
   UploadedFile,
   UseGuards,
@@ -16,6 +21,8 @@ import { diskStorage } from 'multer';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { Users } from './schemas/users.schema';
 import { extname } from 'path';
+import { AdminGuard } from 'src/guards/admin.guard';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -63,5 +70,31 @@ export class UsersController {
     const imagenUrl = file ? `/uploads/perfiles/${file.filename}` : undefined;
 
     return this.usersService.update(id, updateUserDto, imagenUrl);
+  }
+
+  // ENDPOINTS ADMIN
+  @Get()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  getAllUsers() {
+    return this.usersService.findAllUsers();
+  }
+
+  @Post('admin/create')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  createByAdmin(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto, undefined);
+  }
+
+  @Delete(':id/disable')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  disableUser(@Param('id') id: string) {
+    return this.usersService.setStatus(id, false);
+  }
+
+  @Post(':id/restore')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  enableUser(@Param('id') id: string) {
+    return this.usersService.setStatus(id, true);
   }
 }

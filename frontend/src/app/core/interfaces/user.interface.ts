@@ -9,6 +9,7 @@ export interface User {
     descripcion?: string;
     imagenPerfil?: string;
     perfil: 'usuario' | 'administrador';
+    isActive?: boolean;
 }
 
 export interface LoginRequest {

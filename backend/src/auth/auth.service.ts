@@ -34,12 +34,6 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    // const user = await this.usersService.findOne({
-    //   $or: [
-    //     { email: loginDto.usuarioEmail },
-    //     { nombreUsuario: loginDto.usuarioEmail },
-    //   ],
-    // });
     //USANDO EL METODO ESPECIFICO
     const user = await this.usersService.findByEmailOrUsername(
       loginDto.usuarioEmail,
@@ -50,6 +44,13 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales invalidas');
     }
     console.log('Usuario encontrado:', user.email);
+
+    if (!user.isActive) {
+      throw new UnauthorizedException(
+        'Tu cuenta ha sido deshabilitada. Contacta al administrador.',
+      );
+    }
+
     const passwordValid = await bcrypt.compare(
       loginDto.password,
       user.password,

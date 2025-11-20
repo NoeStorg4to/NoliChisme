@@ -1,33 +1,28 @@
-// import {
-//   Injectable,
-//   CanActivate,
-//   ExecutionContext,
-//   ForbiddenException,
-// } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
+import { Users } from '../users/schemas/users.schema';
+import { Request } from 'express';
 
-// @Injectable()
-// export class AdminGuard implements CanActivate {
-//   constructor(private jwtService: JwtService) {}
+interface AuthenticatedRequest extends Request {
+  user: Users;
+}
 
-//   canActivate(context: ExecutionContext): boolean {
-//     const request = context.switchToHttp().getRequest();
-//     const token = request.headers.authorization?.replace('Bearer', '');
+@Injectable()
+export class AdminGuard implements CanActivate {
+  constructor() {}
 
-//     if (!token) {
-//       throw new ForbiddenException('No autorizado');
-//     }
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
 
-//     try {
-//       const payload = this.jwtService.verify(token);
+    if (!user || user.perfil !== 'administrador') {
+      throw new ForbiddenException('Se requieren permisos de administrador');
+    }
 
-//       if (payload.perfil !== 'administrador') {
-//         throw new ForbiddenException('Se requieren permisos de administrador');
-//       }
-
-//       return true;
-//     } catch {
-//       throw new ForbiddenException('Token inválido');
-//     }
-//   }
-// }
+    return true;
+  }
+}

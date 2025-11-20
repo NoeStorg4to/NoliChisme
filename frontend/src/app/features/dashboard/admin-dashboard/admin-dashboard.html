@@ -1,8 +1,105 @@
 <div class="admin-container">
     <div class="admin-header">
-        <h1>Panel de Administración</h1>
+        <h1>Panel de Admin</h1>
         <p>Gestiona los roles de los usuarios</p>
+        <button class="btn btn-primary" (click)="showCreateForm = !showCreateForm">
+            {{ showCreateForm ? 'Cancelar' : '+ Nuevo Usuario' }}
+        </button>
     </div>
+
+    @if (showCreateForm) {
+        <div class="create-user-section">
+            <h3>Registrar nuevo usuario</h3>
+            <form [formGroup]="createUserForm" (ngSubmit)="onSubmitCreate()" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" formControlName="nombre" placeholder="Nombre" class="form-control" [class.is-invalid]="nombre?.invalid && nombre?.touched">
+                        @if(nombre?.invalid && nombre?.touched){
+                            <div class="error-message">
+                                @if(nombre?.errors?.['required']) { El nombre es requerido }
+                                @if (nombre?.errors?.['minlength']) { Mínimo 2 caracteres }
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" formControlName="apellido" class="form-control" [class.is-invalid]="apellido?.invalid && apellido?.touched" placeholder="Apellido">
+                        @if (apellido?.invalid && apellido?.touched) {
+                            <div class="error-message">
+                                @if (apellido?.errors?.['required']) { El apellido es requerido }
+                                @if (apellido?.errors?.['minlength']) { Mínimo 2 caracteres }
+                            </div>
+                        }
+                    </div>                    
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombreUsuario">Nombre de usuario</label>
+                        <input type="text" id="nombreUsuario" formControlName="nombreUsuario" class="form-control" [class.is-invalid]="nombreUsuario?.invalid && nombreUsuario?.touched" placeholder="tu_usuario">
+                        @if (nombreUsuario?.invalid && nombreUsuario?.touched) {
+                            <div class="error-message">
+                                @if (nombreUsuario?.errors?.['required']) { El nombre de usuario es requerido }
+                                @if (nombreUsuario?.errors?.['minlength']) { Mínimo 3 caracteres }
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" formControlName="email" class="form-control" [class.is-invalid]="email?.invalid && email?.touched" placeholder="tu@email.com">
+                        @if (email?.invalid && email?.touched) {
+                            <div class="error-message">
+                                @if (email?.errors?.['email']) { Formato de correo invalido }
+                                @if (email?.errors?.['required']) { El email es requerido }
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" formControlName="password" class="form-control" [class.is-invalid]="password?.invalid && password?.touched" placeholder="********">
+                        @if (password?.invalid && password?.touched) {
+                            <div class="error-message">
+                                @if (password?.errors?.['required']) { La contraseña es requerida }
+                                @if (password?.errors?.['minlength']) { Mínimo 8 caracteres }
+                                @if (password?.errors?.['pattern']) { Debe tener al menos una mayúscula y un número }
+                            </div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaNacimiento">Fecha de nacimiento</label>
+                        <input type="date" id="fechaNacimiento" formControlName="fechaNacimiento" class="form-control" [class.is-invalid]="fechaNacimiento?.invalid && fechaNacimiento?.touched">
+                        @if (fechaNacimiento?.invalid && fechaNacimiento?.touched) {
+                            <div class="error-message">
+                                @if (fechaNacimiento?.errors?.['required']) { La fecha de nacimiento es requerida }
+                            </div>
+                        }
+                    </div>
+                </div>
+                
+                <div class="role-selection">
+                    <label>Perfil:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" formControlName="perfil" value="usuario"> Usuario
+                        </label>
+                        <label>
+                            <input type="radio" formControlName="perfil" value="administrador"> Administrador
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" [disabled]="createUserForm.invalid || isLoading" class="btn btn-success">
+                    @if (isLoading) {
+                        Creando...
+                    } @else {
+                        Crear Usuario
+                    }
+                </button>
+            </form>
+        </div>
+    }
 
     @if (successMessage) {
         <div class="alert alert-success">
@@ -24,42 +121,43 @@
     } @else {
         <div class="usuarios-grid">
             @for (usuario of users; track usuario._id) {
-                <div class="usuario-card">
+                <div class="usuario-card" [class.disabled-card]="!usuario.isActive">
+                    <div class="card-status">
+                        @if(usuario.isActive) {
+                            <span class="status-badge active">Activo</span>
+                        } @else {
+                            <span class="status-badge inactive">Inactivo</span>
+                        }
+                    </div>
                     <div class="usuario-info">
                         <div class="usuario-avatar">
-                            @if (usuario.imagenPerfil) {
-                                <img [src]="usuario.imagenPerfil" [alt]="usuario.nombreUsuario">
-                            } @else {
-                                <div class="avatar-placeholder">
-                                    {{ usuario.nombre.charAt(0).toUpperCase() }}
-                                </div>
-                            }
+                            <div class="avatar-placeholder">{{ usuario.nombre.charAt(0) }}</div>
                         </div>
-                        
                         <div class="usuario-detalles">
                             <h3>{{ usuario.nombre }} {{ usuario.apellido }}</h3>
                             <p class="usuario-username">&#64;{{ usuario.nombreUsuario }}</p>
-                            <p class="usuario-email">{{ usuario.email }}</p>
-                            
-                            <span [class]="getRolBadgeClass(usuario.perfil)">
-                                {{ usuario.perfil === 'administrador' ? 'Admin' : 'Usuario' }}
-                            </span>
+                            <p class="usuario-rol">{{ usuario.perfil | uppercase }}</p>
                         </div>
                     </div>
-
-                    <button 
-                        class="btn-cambiar-rol"
-                        [class.btn-promote]="usuario.perfil === 'usuario'"
-                        [class.btn-demote]="usuario.perfil === 'administrador'"
-                        (click)="changeRol(usuario)">
-                        @if (usuario.perfil === 'usuario') {
-                            Hacer Admin
-                        } @else {
-                            Quitar Admin
-                        }
-                    </button>
+                    <div class="card-actions">
+                        <button 
+                            class="btn-cambiar-rol"
+                            [class.btn-danger]="usuario.isActive"
+                            [class.btn-success]="!usuario.isActive"
+                            (click)="confirmToggleStatus(usuario)">
+                            {{ usuario.isActive ? 'Deshabilitar' : 'Habilitar' }}
+                        </button>
+                    </div> 
                 </div>
             }
         </div>
+        @if (userToToggle) {
+            <app-confirm-modal
+                [message]="'¿Seguro que deseas ' + (userToToggle.isActive ? 'deshabilitar' : 'habilitar') + ' a este usuario?'"
+                [danger]="userToToggle.isActive ?? true"
+                (onConfirm)="onConfirmToggle()"
+                (onClose)="userToToggle = null">
+            </app-confirm-modal>
+        }
     }
 </div>

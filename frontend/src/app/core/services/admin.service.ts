@@ -26,6 +26,18 @@ export class AdminService {
         return this.http.get<User[]>(`${this.apiUrl}/users`);
     }
 
+    createUser(userData: any): Observable<User> {
+        return this.http.post<User>(`${this.apiUrl}/users/admin/create`, userData);
+    }
+
+    disableUser(userId: string): Observable<User> {
+        return this.http.delete<User>(`${this.apiUrl}/users/${userId}/disable`);
+    }
+
+    enableUser(userId: string): Observable<User> {
+        return this.http.post<User>(`${this.apiUrl}/users/${userId}/restore`, {});
+    }
+
     changesRolUser(userId: string, newRol: string): Observable<any> {
         return this.http.patch(
             `${this.apiUrl}/users/${userId}/rol`,

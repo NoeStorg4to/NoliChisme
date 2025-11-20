@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -56,14 +57,6 @@ export class UsersService {
   async findOne(query: FilterQuery<Users>): Promise<Users | null> {
     return this.usuarioModel.findOne(query).exec();
   }
-
-  // async searchByEmailUser(userEmail: string): Promise<Users | null> {
-  //   return this.usuarioModel
-  //     .findOne({
-  //       $or: [{ email: userEmail }, { nombreUsuario: userEmail }],
-  //     })
-  //     .exec();
-  // }
 
   async searchById(id: string): Promise<Users | null> {
     return this.usuarioModel
@@ -123,5 +116,20 @@ export class UsersService {
       .exec();
 
     return updatedUser;
+  }
+
+  // METODO PARA LISTAR TODOS PARA LE ADMIN
+  async findAllUsers(): Promise<Users[]> {
+    return this.usuarioModel.find().select('-password').exec();
+  }
+
+  // METODO PARA ACTIVAR O DESACTIVAR DEL ADMIN
+  async setStatus(id: string, status: boolean): Promise<Users> {
+    const user = await this.usuarioModel
+      .findByIdAndUpdate(id, { isActive: status }, { new: true })
+      .select('-password');
+
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    return user;
   }
 }
