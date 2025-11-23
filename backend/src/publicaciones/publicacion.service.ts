@@ -10,11 +10,18 @@ import { Users } from '../users/schemas/users.schema';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { QueryPublicacionDto } from './dto/query-publicacion.dto';
 import { PublicacionesResponse } from './dto/publicacion-response.dto';
+import { Comentario } from './schemas/comentario.schema';
+import {
+  CommentsPerPostStat,
+  PublicationsByUserStat,
+  TotalCommentsStat,
+} from './dto/stats-response.dto';
 
 @Injectable()
 export class PublicacionesService {
   constructor(
     @InjectModel(Publicacion.name) private publicacionModel: Model<Publicacion>,
+    @InjectModel(Comentario.name) private comentarioModel: Model<Comentario>,
   ) {}
 
   async create(
@@ -40,13 +47,6 @@ export class PublicacionesService {
     if (usuarioId) {
       filter.usuarioId = new Types.ObjectId(usuarioId);
     }
-
-    // const sortOptions = {};
-    // if (sortBy === 'meGusta') {
-    //   sortOptions['likesCount'] = -1;
-    // } else {
-    //   sortOptions['fechaCreacion'] = -1;
-    // }
 
     const sortOptions: Record<string, 1 | -1> =
       sortBy === 'meGusta' ? { likesCount: -1 } : { fechaCreacion: -1 };
@@ -136,5 +136,92 @@ export class PublicacionesService {
     }
     publicacion.likesCount = publicacion.likes.length;
     return publicacion.save();
+  }
+
+  // METODOS PARA ESTADISTICA DEL DASHBOARD
+  async countPublicationsByUser(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<PublicationsByUserStat[]> {
+    const data = await this.publicacionModel
+      .aggregate<PublicationsByUserStat>([
+        {
+          $match: {
+            fechaCreacion: { $gte: startDate, $lte: endDate },
+            isDeleted: false,
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'usuarioId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        { $unwind: '$user' },
+        {
+          $group: {
+            _id: '$usuario_id',
+            username: { $first: '$user.nombreUsuario' },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+      ])
+      .exec();
+
+    return data;
+  }
+
+  async countTotalComments(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<TotalCommentsStat> {
+    const data = await this.comentarioModel
+      .aggregate<{ totalComments: number }>([
+        {
+          $match: {
+            fechaCreacion: { $gte: startDate, $lte: endDate },
+          },
+        },
+        {
+          $count: 'totalComments',
+        },
+      ])
+      .exec();
+
+    return {
+      totalComments: data.length > 0 ? data[0].totalComments : 0,
+      startDate,
+      endDate,
+    };
+  }
+
+  async countCommentsPerPost(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<CommentsPerPostStat[]> {
+    const data = await this.publicacionModel
+      .aggregate<CommentsPerPostStat>([
+        {
+          $match: {
+            fechaCreacion: { $gte: startDate, $lte: endDate },
+            isDeleted: false,
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            descripcion: 1,
+            comentariosCount: '$comentariosCount',
+          },
+        },
+        { $sort: { comentariosCount: -1 } },
+        { $limit: 10 },
+      ])
+      .exec();
+
+    return data;
   }
 }

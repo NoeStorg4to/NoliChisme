@@ -8,6 +8,15 @@
 .admin-header {
   text-align: center;
   margin-bottom: 3rem;
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-actions-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
 .admin-header h1 {
@@ -202,6 +211,17 @@
   border: 2px solid var(--primary-light);
 }
 
+.btn-secondary {
+    background-color: var(--light-gray);
+    color: var(--dark);
+    border: 2px solid var(--gray);
+}
+
+.btn-secondary:hover {
+    background-color: #e5e7eb;
+    box-shadow: none;
+}
+
 .btn-cambiar-rol {
   width: 100%;
   padding: 0.75rem;
@@ -244,6 +264,14 @@
   .admin-header h1 {
     font-size: 1.8rem;
   }
+
+  .admin-actions-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    .admin-actions-group button {
+        width: 100%;
+    }
 
   .usuarios-grid {
     grid-template-columns: 1fr;

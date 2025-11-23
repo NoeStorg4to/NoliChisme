@@ -43,6 +43,10 @@ export class AdminDashboard implements OnInit{
     this.loadUsers();
   }
 
+  goToStats(): void {
+    this.router.navigate(['/admin/stats']);
+  }
+
   loadUsers() {
     this.isLoading = true;
     this.errorMessage = '';

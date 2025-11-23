@@ -4,12 +4,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, of } from 'rxjs';
 import { Comentario, ComentariosPaginados, Publicacion, PublicacionesResponse } from '../interfaces/publicacion.interface';
 import { AuthService } from './auth.service';
+import { CommentsPerPostStat, PublicationsByUserStat, TotalCommentsStat } from '../interfaces/stats.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PublicacionesService {
   private apiUrl = `${enviroment.apiUrl}/publicaciones`;
+  private statsUrl = `${enviroment.apiUrl}/stats/publicaciones`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -89,5 +91,30 @@ export class PublicacionesService {
         return publicaciones.filter(p => p._id !== publicacionId);
       })
     )
+  }
+
+// METODOS PARA ESTADISTICA
+getPublicationsByUserStats(startDate: Date, endDate: Date): Observable<PublicationsByUserStat[]> {
+    return this.getStats('by-user', startDate, endDate);
+  }
+
+  getTotalCommentsStats(startDate: Date, endDate: Date): Observable<TotalCommentsStat> {
+    return this.getStats('comments-total', startDate, endDate);
+  }
+
+  getCommentsPerPostStats(startDate: Date, endDate: Date): Observable<CommentsPerPostStat[]> {
+    return this.getStats('comments-per-post', startDate, endDate);
+  }
+  
+  private getStats<T>(
+    endpoint: 'by-user' | 'comments-total' | 'comments-per-post',
+    startDate: Date,
+    endDate: Date
+  ): Observable<T> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString());
+
+    return this.http.get<T>(`${this.statsUrl}/${endpoint}`, { params });
   }
 }

@@ -8,6 +8,7 @@ import { Comentario, ComentarioSchema } from './schemas/comentario.schema';
 import { Publicacion, PublicacionSchema } from './schemas/publicacion.schema';
 import { ComentarioService } from './comentario/comentario.service';
 import { ComentariosController } from './comentario/comentario.controller';
+import { PublicacionesStatsController } from './stats.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,11 @@ import { ComentariosController } from './comentario/comentario.controller';
     AuthModule,
     UsersModule,
   ],
-  controllers: [PublicacionesController, ComentariosController],
+  controllers: [
+    PublicacionesController,
+    ComentariosController,
+    PublicacionesStatsController,
+  ],
   providers: [PublicacionesService, ComentarioService],
 })
 export class PublicacionesModule {}

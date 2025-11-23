@@ -1,0 +1,68 @@
+<div class="stats-container">
+    <h1>Dashboard de Estadísticas</h1>
+    <p>Visualización de la actividad de la comunidad. (Solo Administradores)</p>
+    
+    @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
+    <div class="time-filter-controls">
+        <label for="startDate">Desde:</label>
+        <input type="date" id="startDate" [(ngModel)]="startDate" class="form-control">
+        <label for="endDate">Hasta:</label>
+        <input type="date" id="endDate" [(ngModel)]="endDate" class="form-control">
+        <button (click)="loadStats()" class="btn btn-primary" [disabled]="isLoading">
+            {{ isLoading ? 'Cargando...' : 'Aplicar Filtro' }}
+        </button>
+    </div>
+
+    @if (isLoading) {
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Cargando chismecitos...</p>
+        </div>
+    } @else {
+        <div class="stats-grid">
+            
+            <div class="chart-card">
+                <h3>Publicaciones por Usuario (Conteo)</h3>
+                <div class="chart-wrapper">
+                    <canvas 
+                        baseChart
+                        [data]="{ datasets: pubChartDatasets, labels: pubChartLabels }"
+                        [options]="pubChartOptions"
+                        [type]="pubChartType">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Total de Comentarios en el Periodo</h3>
+                <div class="chart-wrapper">
+                    <canvas 
+                        baseChart
+                        [data]="{ datasets: commentChartDatasets, labels: commentChartLabels }"
+                        [options]="pubChartOptions"
+                        [type]="commentChartType">
+                    </canvas>
+                    <p class="chart-center-text" [style.color]="'var(--primary-dark)'">
+                        {{ commentChartTotal }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="chart-card large-chart">
+                <h3>Top 10 Publicaciones más Comentadas</h3>
+                <div class="chart-wrapper">
+                    <canvas 
+                        baseChart
+                        [data]="{ datasets: postCommentChartDatasets, labels: postCommentChartLabels }"
+                        [options]="postCommentChartOptions"
+                        [type]="postCommentChartType">
+                    </canvas>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>

@@ -21,6 +21,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard),
         canActivate: [authGuard, adminGuard]
     },
+    { path: 'admin/stats',
+        loadComponent: () => import('./features/dashboard/stats-dashboard/stats-dashboard').then(m => m.StatsDashboard),
+        canActivate: [authGuard, adminGuard]
+    },
     { path: '**', redirectTo: '/login' }
 ];
 
