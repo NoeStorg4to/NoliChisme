@@ -2,11 +2,13 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { AdminGuard } from 'src/guards/admin.guard';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { PublicacionesService } from './publicacion.service';
+import { TimeQueryDto } from './dto/time-query.dto';
+import { PublicationsByUserStat } from './dto/stats-response.dto';
 
-class TimeQueryDto {
-  startDate: string = new Date(0).toISOString();
-  endDate: string = new Date().toISOString();
-}
+// interface ChartResponse {
+//   labels: string[];
+//   data: number[];
+// }
 
 @UseGuards(JwtAuthGuard, AdminGuard)
 @Controller('stats/publicaciones')
@@ -19,20 +21,29 @@ export class PublicacionesStatsController {
       ? new Date(query.startDate)
       : new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    if (!query.endDate) {
+    if (query.endDate) {
+      endDate.setUTCHours(23, 59, 59, 999);
+    } else {
       endDate.setHours(23, 59, 59, 999);
     }
 
-    return { startDate, endDate };
+    return { startDate, endDate, userId: query.userId };
   }
 
   @Get('by-user')
-  getPublicationsByUser(@Query() query: TimeQueryDto) {
-    const { startDate, endDate } = this.getDates(query);
-    return this.publicacionesService.countPublicationsByUser(
-      startDate,
-      endDate,
-    );
+  async getPublicationsByUser(
+    @Query() query: TimeQueryDto,
+  ): Promise<PublicationsByUserStat[]> {
+    const { startDate, endDate, userId } = this.getDates(query);
+
+    const stats: PublicationsByUserStat[] =
+      await this.publicacionesService.countPublicationsByUser(
+        startDate,
+        endDate,
+        userId,
+      );
+
+    return stats;
   }
 
   @Get('comments-total')

@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 import { Publicacion } from './schemas/publicacion.schema';
 import { Users } from '../users/schemas/users.schema';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
@@ -142,36 +142,39 @@ export class PublicacionesService {
   async countPublicationsByUser(
     startDate: Date,
     endDate: Date,
+    userId?: string,
   ): Promise<PublicationsByUserStat[]> {
-    const data = await this.publicacionModel
-      .aggregate<PublicationsByUserStat>([
-        {
-          $match: {
-            fechaCreacion: { $gte: startDate, $lte: endDate },
-            isDeleted: false,
-          },
+    const matchStage: FilterQuery<Publicacion> = {
+      fechaCreacion: { $gte: startDate, $lte: endDate },
+      isDeleted: false,
+    };
+    if (userId) {
+      matchStage.usuarioId = new Types.ObjectId(userId);
+    }
+    const pipeline: PipelineStage[] = [
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$usuarioId',
+          username: { $first: '$user.nombreUsuario' },
+          count: { $sum: 1 },
         },
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'usuarioId',
-            foreignField: '_id',
-            as: 'user',
-          },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'usuarioId',
+          foreignField: '_id',
+          as: 'user',
         },
-        { $unwind: '$user' },
-        {
-          $group: {
-            _id: '$usuario_id',
-            username: { $first: '$user.nombreUsuario' },
-            count: { $sum: 1 },
-          },
-        },
-        { $sort: { count: -1 } },
-      ])
-      .exec();
+      },
+      { $unwind: '$user' },
+      { $sort: { count: -1 } },
+    ];
 
-    return data;
+    return this.publicacionModel
+      .aggregate<PublicationsByUserStat>(pipeline)
+      .exec();
   }
 
   async countTotalComments(

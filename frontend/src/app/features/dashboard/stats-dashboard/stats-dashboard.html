@@ -11,6 +11,21 @@
         <input type="date" id="startDate" [(ngModel)]="startDate" class="form-control">
         <label for="endDate">Hasta:</label>
         <input type="date" id="endDate" [(ngModel)]="endDate" class="form-control">
+
+        <label for="userFilter">Filtrar Publicaciones por:</label>
+        <select 
+            id="userFilter" 
+            [(ngModel)]="selectedUserId" 
+            (ngModelChange)="loadStats()" 
+            class="form-control"
+            [disabled]="isLoading">
+            
+            <option value="">Todos los usuarios</option>
+            
+            @for (user of users; track user._id) {
+                <option [value]="user._id">{{ '@' + user.nombreUsuario }}</option>
+            }
+        </select>
         <button (click)="loadStats()" class="btn btn-primary" [disabled]="isLoading">
             {{ isLoading ? 'Cargando...' : 'Aplicar Filtro' }}
         </button>

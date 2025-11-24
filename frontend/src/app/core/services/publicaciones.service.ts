@@ -94,8 +94,8 @@ export class PublicacionesService {
   }
 
 // METODOS PARA ESTADISTICA
-getPublicationsByUserStats(startDate: Date, endDate: Date): Observable<PublicationsByUserStat[]> {
-    return this.getStats('by-user', startDate, endDate);
+  getPublicationsByUserStats(startDate: Date, endDate: Date, userId?: string): Observable<PublicationsByUserStat[]> {
+    return this.getStats<PublicationsByUserStat[]>('by-user', startDate, endDate, userId);
   }
 
   getTotalCommentsStats(startDate: Date, endDate: Date): Observable<TotalCommentsStat> {
@@ -109,11 +109,16 @@ getPublicationsByUserStats(startDate: Date, endDate: Date): Observable<Publicati
   private getStats<T>(
     endpoint: 'by-user' | 'comments-total' | 'comments-per-post',
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    userId?: string,
   ): Observable<T> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('startDate', startDate.toISOString())
       .set('endDate', endDate.toISOString());
+
+      if (userId) {
+        params = params.set('userId', userId);
+      }
 
     return this.http.get<T>(`${this.statsUrl}/${endpoint}`, { params });
   }

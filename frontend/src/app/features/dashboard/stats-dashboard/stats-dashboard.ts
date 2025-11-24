@@ -7,6 +7,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { PublicacionesService } from '../../../core/services/publicaciones.service';
 import { Router } from '@angular/router';
 import { CommentsPerPostStat, PublicationsByUserStat, TotalCommentsStat } from '../../../core/interfaces/stats.interface';
+import { User } from '../../../core/interfaces/user.interface';
 
 @Component({
   selector: 'app-stats-dashboard',
@@ -45,6 +46,9 @@ export class StatsDashboard implements OnInit{
     scales: { x: { beginAtZero: true } }
   };
 
+  users: User[] = [];
+  selectedUserId: string = '';
+
   constructor(
     private adminService: AdminService,
     private pubService: PublicacionesService,
@@ -56,6 +60,7 @@ export class StatsDashboard implements OnInit{
       this.router.navigate(['/publicaciones']);
       return;
     }
+    this.loadUsers();
     this.loadStats();
   }
 
@@ -69,6 +74,18 @@ export class StatsDashboard implements OnInit{
     return date.toISOString().split('T')[0];
   }
 
+  loadUsers(): void {
+    this.adminService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (err) => {
+        this.errorMessage = 'Error al cargar la lista de usuarios para filtrar.';
+        console.error(err);
+      }
+    });
+  }
+
   loadStats(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -76,7 +93,9 @@ export class StatsDashboard implements OnInit{
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
 
-    this.pubService.getPublicationsByUserStats(start, end).subscribe({
+    const userIdToFilter = this.selectedUserId || undefined;
+
+    this.pubService.getPublicationsByUserStats(start, end, userIdToFilter).subscribe({
       next: (data: PublicationsByUserStat[]) => {
         this.pubChartLabels = data.map(item => `@${item.username}`);
         this.pubChartDatasets = [{
