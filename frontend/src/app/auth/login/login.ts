@@ -50,7 +50,11 @@ export class Login {
         error: (error) => {
           this.isLoading = false;
 
-          if(error.status === 401) {
+          const backendMessage = error.error?.message;
+
+          if (backendMessage === 'ACCOUNT_DISABLED') {
+              this.errorMessage = 'Tu cuenta ha sido deshabilitada. Contacta al administrador para más información.';
+          } else if(error.status === 401) {
             this.errorMessage = 'Usuario o contraseña incorrectos';
           } else if(error.status === 404) {
             this.errorMessage = 'Usuario no encontrado'

@@ -1,4 +1,4 @@
 export const enviroment = {
     production: false,
-    apiUrl: 'http://localhost:3000' //https://nolichisme.onrender.com
+    apiUrl: 'https://nolichisme.onrender.com' //http://localhost:3000
 }
