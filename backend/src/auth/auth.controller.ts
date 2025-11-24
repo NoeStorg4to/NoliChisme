@@ -16,6 +16,7 @@ import { LoginDto } from '../users/dto/login.dto';
 import { GetUser } from './get-user.decorator';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { Users } from 'src/users/schemas/users.schema';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -69,7 +70,7 @@ export class AuthController {
   }
 
   @Post('refrescar')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt-refresh'))
   refrescarToken(@GetUser() user: Users) {
     return this.authService.refreshToken(user);
   }

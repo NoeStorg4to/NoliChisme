@@ -8,6 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsuarioSchema } from 'src/users/schemas/users.schema';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtRefreshStrategy } from './jwt-refresh.strategy';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { JwtStrategy } from './jwt.strategy';
           signOptions: {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             expiresIn: (configService.get<string>('jwtExpiresIn') ||
-              '10m') as any,
+              '15m') as any,
           },
         };
       },
@@ -38,7 +39,7 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
   exports: [JwtStrategy, PassportModule, JwtModule],
 })
 export class AuthModule {}
