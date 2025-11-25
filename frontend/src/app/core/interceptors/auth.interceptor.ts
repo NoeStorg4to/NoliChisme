@@ -11,7 +11,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const router = inject(Router);
 
     if(token) {
-        const clonedRequest = req.clone({
+        const clonedRequest = req.clone({//peticion http clonada
             setHeaders: {
                 Authorization: `Bearer ${token}`
             }
@@ -19,9 +19,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return next(clonedRequest).pipe(
             catchError((error: HttpErrorResponse) => {
                 if (error.status === 401) {
-                console.error('Interceptor 401: Token inválido o expirado.');
-                authService.logout();
-                router.navigate(['/login']);
+                    console.error('Interceptor 401: Token inválido o expirado.');
+                    authService.logout();
+                    router.navigate(['/login']);
                 }
                 return throwError(() => error);
             })

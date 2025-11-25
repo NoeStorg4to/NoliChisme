@@ -33,7 +33,6 @@ export class ComentariosController {
     return this.comentariosService.getComentarios(publicacionId, page, limit);
   }
 
-  // REQ: POST para agregar
   @Post('publicaciones/:publicacionId/comentarios')
   addComentario(
     @Param('publicacionId') publicacionId: string,

@@ -42,8 +42,8 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
-      tap((response: any) => {
-        if(response.access_token && response.usuario) {
+      tap((response: any) => { //tap ejecuta con el observable a la par para guardar el token antes del login del component
+        if(response.access_token && response.usuario) { //se responde si back devolvio el token y user
           localStorage.setItem('token', response.access_token);
           localStorage.setItem('user', JSON.stringify(response.usuario));
           this.currentUserSubject.next(response.usuario);
@@ -93,7 +93,7 @@ export class AuthService {
 
 // TIMER PARA AVISO DE REFRESH TOKEN
   startSessionTimer(): void {
-    this.stopSessionTimer();
+    this.stopSessionTimer(); //detengo cualquier tiempo anterior ejecutandose
 
     this.sessionTimerSubscription = timer(this.TEN_MINUTES_IN_MS).subscribe(() => {
       console.log('Sesión a punto de expirar, mostrando modal.');
@@ -102,7 +102,7 @@ export class AuthService {
   }
 
   stopSessionTimer(): void {
-    this.sessionTimerSubscription?.unsubscribe();
+    this.sessionTimerSubscription?.unsubscribe();//detiene el timer del observable
     this.showSessionModal.next(false);
   }
 
