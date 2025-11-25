@@ -156,19 +156,25 @@ export class PublicacionesService {
       {
         $group: {
           _id: '$usuarioId',
-          username: { $first: '$user.nombreUsuario' },
           count: { $sum: 1 },
         },
       },
       {
         $lookup: {
           from: 'users',
-          localField: 'usuarioId',
+          localField: '_id',
           foreignField: '_id',
           as: 'user',
         },
       },
       { $unwind: '$user' },
+      {
+        $project: {
+          _id: '$_id',
+          username: '$user.nombreUsuario',
+          count: '$count',
+        },
+      },
       { $sort: { count: -1 } },
     ];
 
