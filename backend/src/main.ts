@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import { Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -27,6 +28,10 @@ async function bootstrap() {
   // SIRVIENDO ARCHIVOS ESTATICOS
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setHeaders: (res: Response, path) => {
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   const port = process.env.PORT || 3000;

@@ -155,25 +155,27 @@ export class PublicacionesService {
       { $match: matchStage },
       {
         $group: {
+          //agrupa
           _id: '$usuarioId',
           count: { $sum: 1 },
         },
       },
       {
         $lookup: {
+          //une la coleccion
           from: 'users',
           localField: '_id',
           foreignField: '_id',
           as: 'user',
         },
       },
-      { $unwind: '$user' },
+      { $unwind: '$user' }, //desestructura el array
       {
         $project: {
           _id: '$_id',
           username: '$user.nombreUsuario',
           count: '$count',
-        },
+        }, //da la forma final al objeto
       },
       { $sort: { count: -1 } },
     ];
@@ -192,7 +194,7 @@ export class PublicacionesService {
         {
           $match: {
             fechaCreacion: { $gte: startDate, $lte: endDate },
-          },
+          }, //filtra por rango de fecha
         },
         {
           $count: 'totalComments',
@@ -201,7 +203,7 @@ export class PublicacionesService {
       .exec();
 
     return {
-      totalComments: data.length > 0 ? data[0].totalComments : 0,
+      totalComments: data.length > 0 ? data[0].totalComments : 0, //si hay resultados retorna el valor, sino 0
       startDate,
       endDate,
     };
@@ -217,14 +219,14 @@ export class PublicacionesService {
           $match: {
             fechaCreacion: { $gte: startDate, $lte: endDate },
             isDeleted: false,
-          },
+          }, //filtra por rango de fecha y que no esten eliminiadas
         },
         {
           $project: {
             _id: 1,
             descripcion: 1,
             comentariosCount: '$comentariosCount',
-          },
+          }, //selecciona los campos
         },
         { $sort: { comentariosCount: -1 } },
         { $limit: 10 },
