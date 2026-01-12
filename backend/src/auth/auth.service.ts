@@ -43,7 +43,6 @@ export class AuthService {
       console.log('Usuario no encontrado');
       throw new UnauthorizedException('Credenciales invalidas');
     }
-    console.log('Usuario encontrado:', user.email);
 
     if (!user.isActive) {
       throw new UnauthorizedException('ACCOUNT_DISABLED');

@@ -35,7 +35,6 @@ async function createAdminUser() {
     console.log('Usuario administrador creado exitosamente');
     console.log(' Email:', admin.email);
     console.log('Usuario:', admin.nombreUsuario);
-    console.log('Contraseña:', admin._id);
   } catch (error) {
     console.error('Error creando admin:', error);
   }

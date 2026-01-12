@@ -43,7 +43,7 @@ export class Login {
           if(currentUser && currentUser.perfil === 'administrador'){
             this.router.navigate(['/admin/dashboard'])
           } else {
-            console.log('Login exitosaah', response);
+            //console.log('Login exitosaah', response);
             this.router.navigate(['/publicaciones'])
           }
         },
