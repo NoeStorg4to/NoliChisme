@@ -68,7 +68,7 @@ Sigue estos pasos para correr el proyecto en tu máquina local.
 
 ### 1. Clonar el repositorio
 * bash
-* git clone [https://github.com/tu-usuario/nolichisme.git](https://github.com/tu-usuario/nolichisme.git)
+* git clone [https://github.com/NoeStorg4to/nolichisme.git](https://github.com/tu-usuario/nolichisme.git)
 * cd nolichisme
 
 ### 2. Configurar el Backend
@@ -110,7 +110,7 @@ Si continuara el desarrollo, estas serían las siguientes mejoras:
 
 ## 📧 **Contacto**
 
-Este proyecto fue desarrollado por [Noelia].
+Este proyecto fue desarrollado por Noelia.
 
 * **LinkedIn:** [www.linkedin.com/in/noelia-storgato-dev]
 
